@@ -1,4 +1,4 @@
-# PureReader
+# PureReader（not completely finished yet but can use, temporarily only open for eupb)
 
 一个高性能的多格式电子书阅读器，专为macOS设计，支持快速启动和多种电子书格式。
 
