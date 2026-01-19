@@ -1,0 +1,18 @@
+{
+  "@@locale": "zh",
+  "appTitle": "PureReader",
+  "open": "打开书籍",
+  "settings": "阅读设置",
+  "toc": "目录",
+  "fontSize": "字号大小",
+  "lineHeight": "行间距",
+  "margin": "页边距",
+  "theme": "外观主题",
+  "lang": "语言设定",
+  "appearance": "外观设置",
+  "fontFamily": "字体选择",
+  "zoom": "视图缩放",
+  "customTheme": "自定义颜色",
+  "ok": "确定",
+  "tocNotAvailable": "暂无目录"
+}

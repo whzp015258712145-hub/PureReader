@@ -1,0 +1,48 @@
+name: purereader
+description: 高性能多格式电子书阅读器 - 支持EPUB、PDF、TXT、MOBI、AZW3格式，优化启动速度和内存管理
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  cupertino_icons: ^1.0.6
+  flutter_riverpod: ^2.4.9
+  epub_view: ^3.2.0
+  shared_preferences: ^2.5.4
+  file_picker: ^10.3.8
+  window_manager: ^0.3.8
+  google_fonts: ^6.1.0
+  app_links: ^7.0.0
+  path: ^1.8.3
+  pdfx: ^2.6.0
+  charset_converter: ^2.0.0
+  archive: ^3.4.9
+  xml: ^6.5.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  faker: ^2.1.0
+  flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.11.0
+
+flutter_icons:
+  android: false
+  ios: false
+  image_path: "assets/images/app_icon_square.png"
+  macos:
+    generate: true
+    image_path: "assets/images/app_icon_macos.png"
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - assets/images/

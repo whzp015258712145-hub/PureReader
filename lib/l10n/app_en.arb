@@ -1,0 +1,18 @@
+{
+  "@@locale": "en",
+  "appTitle": "PureReader",
+  "open": "Open Book",
+  "settings": "Settings",
+  "toc": "Contents",
+  "fontSize": "Font Size",
+  "lineHeight": "Line Height",
+  "margin": "Margins",
+  "theme": "Theme",
+  "lang": "Language",
+  "appearance": "Appearance",
+  "fontFamily": "Font",
+  "zoom": "Zoom",
+  "customTheme": "Custom Colors",
+  "ok": "OK",
+  "tocNotAvailable": "TOC not available"
+}
