@@ -13,7 +13,7 @@
 
 ### 📚 多格式支持
 - **EPUB**: 完整支持EPUB 2.0/3.0格式
-- **PDF**: 原生PDF渲染，支持缩放和导航
+- **PDF**: 暂时没有
 - **TXT**: 纯文本文件，支持多种编码格式
 - **MOBI**: Amazon Kindle MOBI格式支持
 - **AZW3**: Amazon Kindle AZW3格式支持
