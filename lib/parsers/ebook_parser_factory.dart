@@ -7,14 +7,14 @@ import 'mobi_parser.dart';
 import 'azw3_parser.dart';
 
 class EbookParserFactory {
-  static EbookParser createParser(EbookFormat format) {
+  static EbookParser createParser(EbookFormat format, {String? encoding}) {
     switch (format) {
       case EbookFormat.epub:
         return EpubParser();
       case EbookFormat.pdf:
         return PdfParser();
       case EbookFormat.txt:
-        return TxtParser();
+        return TxtParser(explicitEncoding: encoding);
       case EbookFormat.mobi:
         return MobiParser();
       case EbookFormat.azw3:

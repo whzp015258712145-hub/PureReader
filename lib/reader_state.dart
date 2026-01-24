@@ -55,42 +55,57 @@ final readerConfigProvider = StateNotifierProvider<ReaderNotifier, ReaderConfig>
 
 final openFileRequestProvider = StateProvider<String?>((ref) => null);
 
+/// Signal to reload current file with specific encoding.
+/// Format: "path|encoding"
+final openFileWithEncodingProvider = StateProvider<String?>((ref) => null);
+
 class ReaderNotifier extends StateNotifier<ReaderConfig> {
   ReaderNotifier() : super(ReaderConfig.defaultConfig()) {
     _loadSettings();
   }
 
   Future<void> _loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? lang = prefs.getString('lang');
-    String? themeId = prefs.getString('theme');
-    double? fontSize = prefs.getDouble('fontSize');
-    String? font = prefs.getString('font');
-    
-    if (lang == null) {
-      final systemLocale = Platform.localeName.split('_')[0];
-      lang = (systemLocale == 'zh') ? 'zh' : 'en';
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? lang = prefs.getString('lang');
+      String? themeId = prefs.getString('theme');
+      double? fontSize = prefs.getDouble('fontSize');
+      String? font = prefs.getString('font');
+      
+      if (lang == null) {
+        final systemLocale = Platform.localeName.split('_')[0];
+        lang = (systemLocale == 'zh') ? 'zh' : 'en';
+      }
+      
+      ReaderTheme theme;
+      if (themeId == 'custom') {
+        int bg = prefs.getInt('custom_bg') ?? ReaderTheme.day.backgroundColor.value;
+        int text = prefs.getInt('custom_text') ?? ReaderTheme.day.textColor.value;
+        theme = ReaderTheme.fromId('custom', customBg: Color(bg), customText: Color(text));
+      } else {
+        theme = themeId != null ? ReaderTheme.fromId(themeId) : ReaderTheme.day;
+      }
+
+      double finalFontSize = fontSize ?? 18.0;
+      
+      if (finalFontSize > 40.0) {
+        finalFontSize = 18.0;
+      }
+      
+      state = state.copyWith(
+        locale: Locale(lang),
+        theme: theme,
+        fontSize: finalFontSize,
+        fontFamily: font ?? '.SF Pro Text',
+      );
+    } catch (e) {
+      debugPrint('Error loading settings: $e');
+      // On error, we keep the default state assigned in constructor
     }
-    
-    ReaderTheme theme;
-    if (themeId == 'custom') {
-      int bg = prefs.getInt('custom_bg') ?? ReaderTheme.day.backgroundColor.value;
-      int text = prefs.getInt('custom_text') ?? ReaderTheme.day.textColor.value;
-      theme = ReaderTheme.fromId('custom', customBg: Color(bg), customText: Color(text));
-    } else {
-      theme = themeId != null ? ReaderTheme.fromId(themeId) : ReaderTheme.day;
-    }
-    
-    state = state.copyWith(
-      locale: Locale(lang),
-      theme: theme,
-      fontSize: fontSize ?? 18.0,
-      fontFamily: font ?? '.SF Pro Text',
-    );
   }
 
   void updateFontSize(double v) {
-    state = state.copyWith(fontSize: v.clamp(10.0, 100.0));
+    state = state.copyWith(fontSize: v.clamp(12.0, 40.0));
     SharedPreferences.getInstance().then((p) => p.setDouble('fontSize', state.fontSize));
   }
 

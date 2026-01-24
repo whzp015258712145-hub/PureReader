@@ -1,16 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 class EncodingDetector {
   /// Detects the encoding of the provided bytes.
   /// Returns a string encoding name compatible with CharsetConverter.
-  static Future<String> detectEncoding(Uint8List bytes) async {
+  static Future<String> detectEncoding(Uint8List bytes, {String? overrideLocale}) async {
     // 1. Check BOM
     String? bomEncoding = _checkBOM(bytes);
     if (bomEncoding != null) return bomEncoding;
 
     // 2. Try UTF-8
-    // UTF-8 is the most common and standard. If it validates, use it.
     try {
       utf8.decode(bytes, allowMalformed: false);
       return 'utf-8';
@@ -18,16 +18,25 @@ class EncodingDetector {
       // Not valid UTF-8
     }
 
-    // 3. Heuristic / Fallback
-    // If not UTF-8, it's likely a legacy encoding.
-    // For a Chinese context, GBK/GB18030 is extremely common.
-    // For Western, ISO-8859-1.
-    // Ideally we would use a statistical detector (like uchardet), but in pure Dart/Flutter
-    // without heavy native bindings, we can guess.
+    // 3. Heuristic / Fallback based on Locale
+    final String locale = (overrideLocale ?? Platform.localeName).toLowerCase();
     
-    // We will return 'gbk' as a strong candidate for non-UTF-8 files in this context.
-    // The UI should allow overriding this if it looks wrong.
-    return 'gbk';
+    if (locale.startsWith('zh')) {
+      // Handle Traditional Chinese (Big5) specifically if possible
+      if (locale.contains('tw') || locale.contains('hk')) {
+        return 'big5';
+      }
+      return 'gbk';
+    }
+    
+    if (locale.startsWith('ja')) return 'shift_jis';
+    if (locale.startsWith('ko')) return 'euc-kr';
+    if (locale.startsWith('ru') || locale.startsWith('uk') || locale.startsWith('be')) {
+      return 'windows-1251'; // Cyrillic
+    }
+    
+    // Western European / Latin-1 as a safe global fallback
+    return 'windows-1252';
   }
 
   static String? _checkBOM(Uint8List bytes) {

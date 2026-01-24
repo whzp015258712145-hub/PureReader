@@ -12,17 +12,21 @@ import 'ebook_parser.dart';
 String _decodeUtf8(Uint8List bytes) => utf8.decode(bytes, allowMalformed: true);
 
 class TxtParser implements EbookParser {
+  final String? explicitEncoding;
+
+  TxtParser({this.explicitEncoding});
+
   @override
   Future<EbookContent> parse(String filePath) async {
     final file = File(filePath);
     final bytes = await file.readAsBytes();
     
-    // Detect encoding
-    String encoding = await EncodingDetector.detectEncoding(bytes);
-    debugPrint('Detected encoding for $filePath: $encoding');
+    // Detect encoding or use explicit one
+    String encoding = explicitEncoding ?? await EncodingDetector.detectEncoding(bytes);
+    debugPrint('Using encoding for $filePath: $encoding (Explicit: ${explicitEncoding != null})');
     
     String content;
-    if (encoding == 'utf-8') {
+    if (encoding.toLowerCase() == 'utf-8') {
       content = await compute(_decodeUtf8, bytes);
     } else {
       try {

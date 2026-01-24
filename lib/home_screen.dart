@@ -8,6 +8,7 @@ import 'package:epub_view/epub_view.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:app_links/app_links.dart';
 import 'package:window_manager/window_manager.dart';
+import '../l10n/app_localizations.dart'; // 直接引入以进行空检查
 import 'reader_state.dart';
 import 'models/reader_theme.dart';
 import 'utils/l10n_extension.dart';
@@ -45,10 +46,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     StartupOptimizer.initialize();
     
-    // Initialize transformation controller with current scale
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final scale = 1.0; // Matrix starts at 1.0, fontSize handles logic
-      _transformationController.value = Matrix4.identity()..scale(scale);
+      _transformationController.value = Matrix4.identity();
     });
 
     if (widget.initialPath != null) {
@@ -74,22 +73,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
-  Future<void> _loadBook(String path) async {
-    if (_currentLoadedPath == path) return;
+  Future<void> _loadBook(String path, {String? encoding}) async {
+    // If encoding is provided, we force a reload even if path is the same
+    if (_currentLoadedPath == path && encoding == null) return;
 
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final cached = await CacheManager.getCachedContent(path);
-      if (cached != null) {
-        setState(() {
-          _ebookContent = cached;
-          _currentLoadedPath = path;
-          _isLoading = false;
-        });
-        return;
+      // Don't use cache if a specific encoding is requested manually
+      if (encoding == null) {
+        final cached = await CacheManager.getCachedContent(path);
+        if (cached != null) {
+          setState(() {
+            _ebookContent = cached;
+            _currentLoadedPath = path;
+            _isLoading = false;
+          });
+          return;
+        }
       }
 
       final format = await FileFormatDetector.detectFormat(path);
@@ -97,10 +100,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
          throw Exception('Unknown file format');
       }
 
-      final parser = EbookParserFactory.createParser(format);
+      final parser = EbookParserFactory.createParser(format, encoding: encoding);
       final content = await parser.parse(path);
       
-      await CacheManager.cacheContent(path, content);
+      if (encoding == null) {
+        await CacheManager.cacheContent(path, content);
+      }
 
       setState(() {
         _ebookContent = content;
@@ -141,11 +146,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final config = ref.watch(readerConfigProvider);
     final theme = config.theme;
+    
+    // 关键守卫：如果 AppLocalizations 尚未就绪，返回安全占位符以防闪退
+    if (AppLocalizations.of(context) == null) {
+      return Scaffold(backgroundColor: theme.backgroundColor);
+    }
 
     ref.listen(openFileRequestProvider, (previous, next) {
       if (next != null) {
         _loadBook(next);
         Future.microtask(() => ref.read(openFileRequestProvider.notifier).state = null);
+      }
+    });
+
+    ref.listen(openFileWithEncodingProvider, (previous, next) {
+      if (next != null && _currentLoadedPath != null) {
+        final parts = next.split('|');
+        if (parts.length == 2 && parts[0] == 'RELOAD') {
+          final encoding = parts[1] == 'auto' ? null : parts[1];
+          _loadBook(_currentLoadedPath!, encoding: encoding);
+        }
+        Future.microtask(() => ref.read(openFileWithEncodingProvider.notifier).state = null);
       }
     });
 
@@ -169,11 +190,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: ClipRect(
                         child: LayoutBuilder(
                           builder: (context, constraints) {
+                            final currentScale = _transformationController.value.getMaxScaleOnAxis();
                             return Listener(
                               onPointerSignal: (pointerSignal) {
                                 if (pointerSignal is PointerScrollEvent &&
                                     RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.controlLeft)) {
-                                  // For mouse wheel zoom, we update logical font size directly
                                   final delta = pointerSignal.scrollDelta.dy / 100;
                                   ref.read(readerConfigProvider.notifier).updateFontSize(config.fontSize - delta);
                                 }
@@ -182,28 +203,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 transformationController: _transformationController,
                                 minScale: 0.5,
                                 maxScale: 5.0,
-                                constrained: false,
+                                panEnabled: currentScale > 1.01,
+                                scaleEnabled: true,
+                                constrained: true,
                                 onInteractionUpdate: (details) {
-                                  // Performance: Visual scaling only
-                                },
-                                onInteractionEnd: (details) {
-                                  final visualScale = _transformationController.value.getMaxScaleOnAxis();
-                                  if ((visualScale - 1.0).abs() > 0.01) {
-                                    ref.read(readerConfigProvider.notifier).updateFontSize(config.fontSize * visualScale);
-                                    _transformationController.value = Matrix4.identity();
+                                  if (details.scale != 1.0) {
+                                    setState(() {});
                                   }
                                 },
-                                child: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 200),
-                                  transitionBuilder: (Widget child, Animation<double> animation) {
-                                    return FadeTransition(opacity: animation, child: child);
-                                  },
-                                  child: SizedBox(
-                                    key: ValueKey(config.fontSize),
-                                    width: constraints.maxWidth,
-                                    height: constraints.maxHeight,
-                                    child: _buildMainContent(config, theme),
-                                  ),
+                                onInteractionEnd: (details) {
+                                  setState(() {});
+                                },
+                                child: SizedBox(
+                                  width: constraints.maxWidth,
+                                  height: constraints.maxHeight,
+                                  child: _buildMainContent(config, theme),
                                 ),
                               ),
                             );
@@ -237,12 +251,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     fontSize: 18, 
                     fontWeight: FontWeight.bold, 
                     color: theme.textColor,
-                    height: 1.2,
+                    height: 1.4,
                   ),
-                  strutStyle: const StrutStyle(
-                    forceStrutHeight: true,
-                    height: 1.2,
-                    leading: 0.3,
+                  textHeightBehavior: const TextHeightBehavior(
+                    leadingDistribution: TextLeadingDistribution.even,
                   ),
                 ),
                 IconButton(
@@ -265,23 +277,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         controller: _ebookContent!.controller as EpubController,
         itemBuilder: (context, index, chapter, itemCount) => InkWell(
           onTap: () {
-            // Reset zoom/translation when navigating to a new section
             _transformationController.value = Matrix4.identity();
             (_ebookContent!.controller as EpubController).scrollTo(index: chapter.startIndex);
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             child: Text(
               chapter.title?.trim() ?? 'Chapter $index',
               style: TextStyle(
                 fontSize: 14, 
                 color: theme.textColor.withOpacity(0.9),
-                height: 1.2,
+                height: 1.4,
+                fontFamilyFallback: const [
+                  '.AppleSystemUIFont',
+                  'PingFang SC',
+                  'Hiragino Sans',
+                  'Microsoft YaHei',
+                  'Arial',
+                ],
               ),
-              strutStyle: const StrutStyle(
-                forceStrutHeight: true,
-                height: 1.2,
-                leading: 0.3,
+              textHeightBehavior: const TextHeightBehavior(
+                leadingDistribution: TextLeadingDistribution.even,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -358,6 +374,9 @@ class _AppearanceDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(readerConfigProvider);
     final notifier = ref.read(readerConfigProvider.notifier);
+    
+    // 如果 Dialog 在资源就绪前弹出，进行守卫
+    if (AppLocalizations.of(context) == null) return const SizedBox.shrink();
 
     return AlertDialog(
       backgroundColor: theme.backgroundColor,

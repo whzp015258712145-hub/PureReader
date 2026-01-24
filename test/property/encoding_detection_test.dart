@@ -15,13 +15,21 @@ void main() {
       expect(await EncodingDetector.detectEncoding(bytes), 'utf-8');
     });
 
-    test('Should fallback to GBK (or heuristic) for invalid UTF-8', () async {
-      // Invalid UTF-8 sequence (e.g. single 0xFF byte or GBK sequence)
-      // "你好" in GBK is C4 E3 BA C3
-      final bytes = Uint8List.fromList([0xC4, 0xE3, 0xBA, 0xC3]);
+    test('Should fallback to locale-specific encoding for invalid UTF-8', () async {
+      final bytes = Uint8List.fromList([0xC4, 0xE3, 0xBA, 0xC3]); // "你好" in GBK
       
-      // Since it's not valid UTF-8, it should return 'gbk'
-      expect(await EncodingDetector.detectEncoding(bytes), 'gbk');
+      // Chinese
+      expect(await EncodingDetector.detectEncoding(bytes, overrideLocale: 'zh_CN'), 'gbk');
+      expect(await EncodingDetector.detectEncoding(bytes, overrideLocale: 'zh_TW'), 'big5');
+      
+      // Japanese
+      expect(await EncodingDetector.detectEncoding(bytes, overrideLocale: 'ja_JP'), 'shift_jis');
+      
+      // Russian
+      expect(await EncodingDetector.detectEncoding(bytes, overrideLocale: 'ru_RU'), 'windows-1251');
+      
+      // Western/Fallback
+      expect(await EncodingDetector.detectEncoding(bytes, overrideLocale: 'en_US'), 'windows-1252');
     });
   });
 }

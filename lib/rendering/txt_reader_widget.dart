@@ -13,6 +13,14 @@ class TxtReaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> fontFallbacks = [
+      '.AppleSystemUIFont',
+      'PingFang SC',
+      'Hiragino Sans',
+      'Microsoft YaHei',
+      'Arial',
+    ];
+
     return Container(
       color: config.theme.backgroundColor,
       child: SelectionArea(
@@ -28,6 +36,7 @@ class TxtReaderWidget extends StatelessWidget {
                   height: config.lineHeight,
                   color: config.theme.textColor,
                   fontFamily: config.fontFamily,
+                  fontFamilyFallback: fontFallbacks,
                 ),
               ),
             );

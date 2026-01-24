@@ -27,16 +27,43 @@ class UnifiedRenderEngine extends StatelessWidget {
   }
 
   Widget _buildEngine(BuildContext context) {
+    // Shared fallback fonts for international characters
+    final List<String> fontFallbacks = [
+      '.AppleSystemUIFont', // macOS/iOS
+      'PingFang SC',       // Chinese
+      'Hiragino Sans',     // Japanese
+      'Microsoft YaHei',   // Windows Chinese
+      'Arial',             // Global fallback
+    ];
+
     switch (content.format) {
       case EbookFormat.epub:
-        return EpubView(
+        final isNight = config.theme.id == 'night';
+        
+        // Prepare base text style for EPUB
+        final baseStyle = TextStyle(
+          color: config.theme.textColor,
+          fontSize: config.fontSize,
+          fontFamily: config.fontFamily,
+          fontFamilyFallback: fontFallbacks,
+          height: config.lineHeight,
+        );
+
+        Widget epubView = EpubView(
           controller: content.controller as EpubController,
           builders: EpubViewBuilders<DefaultBuilderOptions>(
-            options: const DefaultBuilderOptions(),
+            options: DefaultBuilderOptions(
+              textStyle: baseStyle,
+            ),
             loaderBuilder: (context) => const Center(
               child: CupertinoActivityIndicator(),
             ),
           ),
+        );
+
+        return Container(
+          color: config.theme.backgroundColor,
+          child: epubView,
         );
       case EbookFormat.pdf:
         return PdfReaderWidget(
@@ -51,8 +78,6 @@ class UnifiedRenderEngine extends StatelessWidget {
       case EbookFormat.mobi:
       case EbookFormat.azw3:
         if (content.textContent != null) {
-           // Reuse TxtReader logic for simple text/error display
-           // We might need to fake 'pages' if not present
            final pages = content.pages ?? [content.textContent!];
            return TxtReaderWidget(pages: pages, config: config);
         }
