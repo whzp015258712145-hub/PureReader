@@ -108,36 +108,37 @@ class UnifiedRenderEngine extends StatelessWidget {
 
               final paragraph = paragraphs[index];
 
-              return Column(
-                key: ValueKey('para_$index'), // Help Flutter reuse widgets
-                children: <Widget>[
-                  if (chapterIndex >= 0 && paragraphIndex == 0)
-                    builders.chapterDividerBuilder(chapters[chapterIndex]),
-                  Html(
-                    data: paragraph.element.outerHtml,
-                    onLinkTap: (href, _, __) => onExternalLinkPressed(href!),
-                    style: htmlStyle,
-                    extensions: [
-                      TagExtension(
-                        tagsToExtend: const {"img"},
-                        builder: (imageContext) {
-                          final url = imageContext.attributes['src']?.replaceAll('../', '');
-                          if (url == null) return const SizedBox.shrink();
-                          final imgContent = document.Content?.Images?[url]?.Content;
-                          if (imgContent == null) return const SizedBox.shrink();
-                          return Image(
-                            image: MemoryImage(Uint8List.fromList(imgContent)),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+              return RepaintBoundary(
+                child: Column(
+                  key: ValueKey('para_$index'), // Help Flutter reuse widgets
+                  children: <Widget>[
+                    if (chapterIndex >= 0 && paragraphIndex == 0)
+                      builders.chapterDividerBuilder(chapters[chapterIndex]),
+                    Html(
+                      data: paragraph.element.outerHtml,
+                      onLinkTap: (href, _, __) => onExternalLinkPressed(href!),
+                      style: htmlStyle,
+                      extensions: [
+                        TagExtension(
+                          tagsToExtend: const {"img"},
+                          builder: (imageContext) {
+                            final url = imageContext.attributes['src']?.replaceAll('../', '');
+                            if (url == null) return const SizedBox.shrink();
+                            final imgContent = document.Content?.Images?[url]?.Content;
+                            if (imgContent == null) return const SizedBox.shrink();
+                            return Image(
+                              image: MemoryImage(Uint8List.fromList(imgContent)),
+                              filterQuality: FilterQuality.low, // Higher performance during scroll
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               );
             },
-            loaderBuilder: (context) => const Center(
-              child: CupertinoActivityIndicator(),
-            ),
+            loaderBuilder: (context) => _buildSkeletonLoader(context),
           ),
         );
 
@@ -158,8 +159,8 @@ class UnifiedRenderEngine extends StatelessWidget {
       case EbookFormat.mobi:
       case EbookFormat.azw3:
         if (content.textContent != null) {
-           final pages = content.pages ?? [content.textContent!];
-           return TxtReaderWidget(pages: pages, config: config);
+          final pages = content.pages ?? [content.textContent!];
+          return TxtReaderWidget(pages: pages, config: config);
         }
         return const Center(
           child: Text(
@@ -170,5 +171,29 @@ class UnifiedRenderEngine extends StatelessWidget {
       case EbookFormat.unknown:
         return const Center(child: Text('Unknown format'));
     }
+  }
+
+  Widget _buildSkeletonLoader(BuildContext context) {
+    return Container(
+      color: config.theme.backgroundColor,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: List.generate(10, (index) {
+          double widthFactor = (index % 3 == 0) ? 0.9 : (index % 3 == 1 ? 0.95 : 0.7);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: Container(
+              height: config.fontSize,
+              width: MediaQuery.of(context).size.width * widthFactor,
+              decoration: BoxDecoration(
+                color: config.theme.textColor.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
   }
 }
