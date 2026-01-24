@@ -31,7 +31,7 @@ class ReaderTheme {
     id: 'night',
     name: 'Night',
     backgroundColor: Color(0xFF1E1E1E),
-    textColor: Color(0xFFCECECE),
+    textColor: Color(0xFFB0B0B0),
     uiOverlayColor: Color(0xFF2C2C2C),
     accentColor: Color(0xFF888888),
   );
@@ -39,10 +39,10 @@ class ReaderTheme {
   static const ReaderTheme mujiYellow = ReaderTheme(
     id: 'muji',
     name: 'Muji',
-    backgroundColor: Color(0xFFF7F2E6),
-    textColor: Color(0xFF4A443A),
-    uiOverlayColor: Color(0xFFE8E2D2),
-    accentColor: Color(0xFF8C8472),
+    backgroundColor: Color(0xFFF4ECD8),
+    textColor: Color(0xFF3B312A),
+    uiOverlayColor: Color(0xFFE6DBBF),
+    accentColor: Color(0xFF7D705C),
   );
 
   static const ReaderTheme forestGreen = ReaderTheme(

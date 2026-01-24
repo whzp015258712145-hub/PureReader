@@ -172,61 +172,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       backgroundColor: theme.backgroundColor,
-      body: Column(
+      body: Row(
         children: [
-          DragToMoveArea(
-            child: Container(
-              height: 38,
-              color: Colors.transparent,
-            ),
-          ),
+          if (_ebookContent != null)
+            _buildPersistentSidebar(context, config, theme),
           Expanded(
-            child: _ebookContent == null 
-              ? _buildMainContent(config, theme)
-              : Row(
-                  children: [
-                    _buildPersistentSidebar(context, config, theme),
-                    Expanded(
-                      child: ClipRect(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final currentScale = _transformationController.value.getMaxScaleOnAxis();
-                            return Listener(
-                              onPointerSignal: (pointerSignal) {
-                                if (pointerSignal is PointerScrollEvent &&
-                                    RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.controlLeft)) {
-                                  final delta = pointerSignal.scrollDelta.dy / 100;
-                                  ref.read(readerConfigProvider.notifier).updateFontSize(config.fontSize - delta);
-                                }
-                              },
-                              child: InteractiveViewer(
-                                transformationController: _transformationController,
-                                minScale: 0.5,
-                                maxScale: 5.0,
-                                panEnabled: currentScale > 1.01,
-                                scaleEnabled: true,
-                                constrained: true,
-                                onInteractionUpdate: (details) {
-                                  if (details.scale != 1.0) {
-                                    setState(() {});
-                                  }
-                                },
-                                onInteractionEnd: (details) {
-                                  setState(() {});
-                                },
-                                child: SizedBox(
-                                  width: constraints.maxWidth,
-                                  height: constraints.maxHeight,
-                                  child: _buildMainContent(config, theme),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
+            child: Column(
+              children: [
+                DragToMoveArea(
+                  child: Container(
+                    height: 38 + MediaQuery.of(context).padding.top,
+                    color: Colors.transparent,
+                  ),
                 ),
+                Expanded(
+                  child: ClipRect(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final currentScale = _transformationController.value.getMaxScaleOnAxis();
+                        return Listener(
+                          onPointerSignal: (pointerSignal) {
+                            if (pointerSignal is PointerScrollEvent &&
+                                RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.controlLeft)) {
+                              final delta = pointerSignal.scrollDelta.dy / 100;
+                              ref.read(readerConfigProvider.notifier).updateFontSize(config.fontSize - delta);
+                            }
+                          },
+                          child: InteractiveViewer(
+                            transformationController: _transformationController,
+                            minScale: 0.5,
+                            maxScale: 5.0,
+                            panEnabled: currentScale > 1.01,
+                            scaleEnabled: true,
+                            constrained: true,
+                            onInteractionUpdate: (details) {
+                              if (details.scale != 1.0) {
+                                setState(() {});
+                              }
+                            },
+                            onInteractionEnd: (details) {
+                              setState(() {});
+                            },
+                            child: SizedBox(
+                              width: constraints.maxWidth,
+                              height: constraints.maxHeight,
+                              child: _buildMainContent(config, theme),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -234,14 +233,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildPersistentSidebar(BuildContext context, ReaderConfig config, ReaderTheme theme) {
+    final topPadding = MediaQuery.of(context).padding.top;
+    
     return Container(
       width: 280,
       color: theme.uiOverlayColor.withOpacity(0.3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          DragToMoveArea(
+            child: SizedBox(
+              height: 38 + topPadding,
+              width: double.infinity,
+            ),
+          ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
