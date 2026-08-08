@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0">
+  <description>
+    <title-info>
+      <book-title>三体（样本一）</book-title>
+      <author>
+        <first-name>刘</first-name>
+        <last-name>慈欣</last-name>
+      </author>
+    </title-info>
+  </description>
+  <body>
+    <section>
+      <title><p>第一章 地球往事</p></title>
+      <p>“给岁月以文明，而不是给文明以岁月。”</p>
+      <p>这是一个中文 FB2 样本。</p>
+    </section>
+    <section>
+      <title><p>第二章 红岸</p></title>
+      <p>这里测试章节提取与正文可读性。</p>
+      <subtitle>小标题也应转为可读段落。</subtitle>
+    </section>
+  </body>
+</FictionBook>
+
+
+
+
+
+
+
+
+

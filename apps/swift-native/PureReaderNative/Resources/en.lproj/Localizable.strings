@@ -1,0 +1,31 @@
+/* Menu items */
+"menu_open" = "Open...";
+"menu_encoding" = "Encoding";
+"menu_zoom_in" = "Zoom In";
+"menu_zoom_out" = "Zoom Out";
+"menu_actual_size" = "Actual Size";
+"menu_toggle_sidebar" = "Toggle Sidebar";
+"menu_theme" = "Theme";
+"menu_language" = "Language";
+
+/* Theme names */
+"theme_day" = "Day";
+"theme_night" = "Night";
+"theme_muji" = "Muji";
+"theme_forest" = "Forest";
+
+/* UI strings */
+"toc" = "Contents";
+"no_chapters" = "No chapter structure";
+"no_chapters_subtitle" = "Content will be displayed continuously";
+"appearance" = "Appearance";
+"font_family" = "Font Family";
+"font_size" = "Font Size";
+"line_height" = "Line Height";
+"theme" = "Theme";
+"ok" = "OK";
+"open" = "Open Book";
+"retry" = "Retry";
+"unsupported_format" = "Unsupported format";
+
+

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0">
+  <description>
+    <title-info>
+      <book-title>Преступление и наказание (образец)</book-title>
+      <author>
+        <first-name>Фёдор</first-name>
+        <last-name>Достоевский</last-name>
+      </author>
+    </title-info>
+  </description>
+  <body>
+    <section>
+      <title><p>Часть первая</p></title>
+      <p>В начале июля, в чрезвычайно жаркое время...</p>
+      <poem>
+        <stanza>
+          <v>На улице шум и жара.</v>
+          <v>И город дышит тяжело.</v>
+        </stanza>
+      </poem>
+    </section>
+  </body>
+</FictionBook>
+
+
+
+
+
+
+
+
+
