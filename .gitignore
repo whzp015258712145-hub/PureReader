@@ -10,7 +10,10 @@
 .history
 .svn/
 .swiftpm/
+.cursor/
+.claude/
 migrate_working_dir/
+
 
 # IntelliJ related
 *.iml

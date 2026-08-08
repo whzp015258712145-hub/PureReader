@@ -24,6 +24,8 @@ PureReader is a high-performance, native macOS multi-format ebook reader develop
 
 ## Development Conventions
 - **Source of Truth:** Main development path is located under `apps/swift-native/`.
+- **OpenSpec & Specs:** Follow OpenSpec standards; maintain `openspec/project.md` as the primary project source of truth and update specs in `openspec/` prior to major structural changes.
 - **Modularity:** Parsers and decoders must be kept decoupled and single-responsibility.
 - **HTML/CSS Generation:** All WebKit HTML wrappers must be generated through `HTMLTemplateBuilder` to enforce centralized theme, typography, and bridge script contracts.
 - **Code Style:** Pure Swift 5.9 conventions, strict MainActor annotations on ViewModels, clean SwiftUI property wrappers.
+
