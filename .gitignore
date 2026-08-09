@@ -16,6 +16,7 @@ migrate_working_dir/
 .metadata
 docs/
 doc/
+CLAUDE.md
 
 
 # IntelliJ related
