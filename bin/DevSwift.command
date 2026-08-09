@@ -53,6 +53,8 @@ try:
                 resources_dst = os.path.join(app_bundle, "Contents", "Resources")
                 subprocess.run(["cp", bin_src, bin_dst])
                 subprocess.run(f"cp -R {SWIFT_ROOT}/.build/debug/*.bundle {resources_dst}/ 2>/dev/null || true", shell=True)
+                subprocess.run(["pkill", "-x", "PureReader"])
+                time.sleep(0.2)
                 subprocess.run(["open", app_bundle])
                 print("✅ [Live Reload] 增量刷新完成！")
             else:

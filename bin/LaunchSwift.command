@@ -41,6 +41,10 @@ if [ -f "$SWIFT_ROOT/Package.swift" ]; then
         "$SWIFT_ROOT/PureReaderNative/Resources/Info.plist" > "$APP_BUNDLE/Contents/Info.plist"
   fi
 
+  # 杀死可能滞留的旧 PureReader 进程，避免 macOS open 命令仅置顶旧 PID 实例
+  pkill -x PureReader 2>/dev/null || true
+  sleep 0.2
+
   echo "✨ 启动 PureReader.app..."
   open "$APP_BUNDLE"
 
