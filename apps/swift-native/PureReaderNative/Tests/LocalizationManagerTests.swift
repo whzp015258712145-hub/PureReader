@@ -110,7 +110,7 @@ struct LocalizationManagerTests {
             try assertEqual(manager.currentLanguage, .german, "Language is German")
             try assertEqual(manager.string(for: "file"), "Datei", "file key")
             try assertEqual(manager.string(for: "edit"), "Bearbeiten", "edit key")
-            try assertEqual(manager.string(for: "view"), "Darstellung", "view key")
+            try assertEqual(manager.string(for: "view"), "Ansicht", "view key")
             try assertEqual(manager.string(for: "window"), "Fenster", "window key")
             try assertEqual(manager.string(for: "help"), "Hilfe", "help key")
             try assertEqual(manager.string(for: "open_file"), "Öffnen...", "open_file key")

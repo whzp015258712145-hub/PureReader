@@ -1,7 +1,7 @@
 /* Top Level System Menus */
 "file" = "Archivo";
 "edit" = "Edición";
-"view" = "Visualización";
+"view" = "Ver";
 "window" = "Ventana";
 "help" = "Ayuda";
 
