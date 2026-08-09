@@ -1,6 +1,9 @@
-/* Top Level Menus */
+/* Top Level System Menus */
 "file" = "File";
+"edit" = "Edit";
 "view" = "View";
+"window" = "Window";
+"help" = "Help";
 
 /* Menu & UI items */
 "open_file" = "Open...";

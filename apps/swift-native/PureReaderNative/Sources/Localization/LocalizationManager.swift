@@ -43,6 +43,11 @@ public final class LocalizationManager: ObservableObject {
     /// 切换应用语言
     public func setLanguage(_ language: AppLanguage) {
         currentLanguage = language
+
+        // 同步设置进程级 AppleLanguages 语言环境变量
+        UserDefaults.standard.set([language.rawValue], forKey: "AppleLanguages")
+        UserDefaults.standard.synchronize()
+
         updateSystemMenuLanguage()
     }
 
@@ -69,19 +74,26 @@ public final class LocalizationManager: ObservableObject {
         return Bundle.module.localizedString(forKey: key, value: key, table: nil as String?)
     }
 
-
-
     /// 动态刷新 AppKit NSApp.mainMenu 系统菜单栏标题
     public func updateSystemMenuLanguage() {
         guard let mainMenu = NSApplication.shared.mainMenu else { return }
 
-        // 包含所有顶层菜单与子选项的双向标题映射表
+        // 包含所有顶层系统菜单与子选项的双向标题映射表
         let keyMapping: [String: String] = [
-            // Top Level Menus
+            // Top Level System Menus
             "File": "file",
             "文件": "file",
+            "Edit": "edit",
+            "编辑": "edit",
             "View": "view",
+            "显示": "view",
             "视图": "view",
+            "Window": "window",
+            "窗口": "window",
+            "Help": "help",
+            "帮助": "help",
+
+            // Custom Top Level & Submenus
             "Encoding": "encoding",
             "编码": "encoding",
             "Theme": "theme",
@@ -121,7 +133,9 @@ public final class LocalizationManager: ObservableObject {
                 }
                 if let submenu = item.submenu {
                     if let key = keyMapping[submenu.title] {
-                        submenu.title = string(for: key)
+                        let newTitle = string(for: key)
+                        submenu.title = newTitle
+                        item.title = newTitle
                     }
                     updateMenu(submenu)
                 }

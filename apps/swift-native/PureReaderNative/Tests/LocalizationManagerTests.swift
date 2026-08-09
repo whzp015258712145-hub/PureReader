@@ -9,12 +9,7 @@ import Foundation
 import PureReaderCore
 
 @main
-
-
-
-
 struct LocalizationManagerTests {
-
 
     static func main() async {
         print("------------------------------------------------")
@@ -63,7 +58,10 @@ struct LocalizationManagerTests {
             await manager.setLanguage(.english)
             try assertEqual(manager.currentLanguage, .english, "Language is English")
             try assertEqual(manager.string(for: "file"), "File", "file key")
+            try assertEqual(manager.string(for: "edit"), "Edit", "edit key")
             try assertEqual(manager.string(for: "view"), "View", "view key")
+            try assertEqual(manager.string(for: "window"), "Window", "window key")
+            try assertEqual(manager.string(for: "help"), "Help", "help key")
             try assertEqual(manager.string(for: "open_file"), "Open...", "open_file key")
             try assertEqual(manager.string(for: "encoding"), "Encoding", "encoding key")
             try assertEqual(manager.string(for: "zoom_in"), "Zoom In", "zoom_in key")
@@ -83,7 +81,10 @@ struct LocalizationManagerTests {
             await manager.setLanguage(.simplifiedChinese)
             try assertEqual(manager.currentLanguage, .simplifiedChinese, "Language is Chinese")
             try assertEqual(manager.string(for: "file"), "文件", "file key")
-            try assertEqual(manager.string(for: "view"), "视图", "view key")
+            try assertEqual(manager.string(for: "edit"), "编辑", "edit key")
+            try assertEqual(manager.string(for: "view"), "显示", "view key")
+            try assertEqual(manager.string(for: "window"), "窗口", "window key")
+            try assertEqual(manager.string(for: "help"), "帮助", "help key")
             try assertEqual(manager.string(for: "open_file"), "打开...", "open_file key")
             try assertEqual(manager.string(for: "encoding"), "编码", "encoding key")
             try assertEqual(manager.string(for: "zoom_in"), "放大", "zoom_in key")
@@ -101,7 +102,7 @@ struct LocalizationManagerTests {
         // Test 4: All Keys Completeness
         await runTest("testAllKeysCompleteness") {
             let allKeys = [
-                "file", "view", "open_file", "encoding", "zoom_in", "zoom_out",
+                "file", "edit", "view", "window", "help", "open_file", "encoding", "zoom_in", "zoom_out",
                 "actual_size", "toggle_sidebar", "theme", "language",
                 "theme_day", "theme_night", "theme_muji", "theme_forest",
                 "toc", "no_chapters", "no_chapters_subtitle", "appearance",
