@@ -13,15 +13,38 @@ echo "------------------------------------------------"
 echo "🚀 启动 Swift Native 版本 (apps/swift-native)"
 echo "------------------------------------------------"
 
-# 优先命令行运行 Swift Package
+# 优先编译并打包成 macOS App Bundle 运行（确保 macOS 顶部菜单栏正确显示为 PureReader）
 if [ -f "$SWIFT_ROOT/Package.swift" ]; then
-  echo "📦 检测到 Package.swift，使用 swift run 启动..."
-  swift run --package-path "$SWIFT_ROOT"
+  echo "📦 正在编译 Swift Package..."
+  swift build --package-path "$SWIFT_ROOT"
+
+  APP_BUNDLE="$SWIFT_ROOT/.build/PureReader.app"
+  mkdir -p "$APP_BUNDLE/Contents/MacOS"
+  mkdir -p "$APP_BUNDLE/Contents/Resources"
+
+  cp "$SWIFT_ROOT/.build/debug/PureReader" "$APP_BUNDLE/Contents/MacOS/PureReader"
+
+  # 写入/生成 Info.plist，使顶部菜单栏显示为 PureReader 并支持菜单调试与文件关联
+  if [ -f "$SWIFT_ROOT/PureReaderNative/Resources/Info.plist" ]; then
+    sed -e 's/\$(EXECUTABLE_NAME)/PureReader/g' \
+        -e 's/\$(PRODUCT_NAME)/PureReader/g' \
+        -e 's/\$(PRODUCT_BUNDLE_IDENTIFIER)/com.purereader.app/g' \
+        -e 's/\$(DEVELOPMENT_LANGUAGE)/en/g' \
+        -e 's/\$(MARKETING_VERSION)/1.0.0/g' \
+        -e 's/\$(CURRENT_PROJECT_VERSION)/1/g' \
+        -e 's/\$(MACOSX_DEPLOYMENT_TARGET)/13.0/g' \
+        -e 's/\$(PRODUCT_COPYRIGHT)/Copyright © 2026/g' \
+        "$SWIFT_ROOT/PureReaderNative/Resources/Info.plist" > "$APP_BUNDLE/Contents/Info.plist"
+  fi
+
+  echo "✨ 启动 PureReader.app..."
+  open "$APP_BUNDLE"
+
   echo "------------------------------------------------"
-  echo "✅ Swift Native 版本已退出"
-  read -p "按回车键关闭窗口..."
+  echo "✅ PureReader 已启动！"
   exit 0
 fi
+
 
 # 其次打开 Xcode 工程
 XCODEPROJ=$(ls "$SWIFT_ROOT"/*.xcodeproj 2>/dev/null | head -n 1 || true)

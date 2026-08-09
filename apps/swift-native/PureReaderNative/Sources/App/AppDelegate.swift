@@ -8,7 +8,14 @@
 import AppKit
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // 强行提升为前台 GUI 应用并强制获取焦点，使系统顶部菜单栏切换为 PureReader 菜单
+        NSApp.setActivationPolicy(.regular)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
     // 处理 Finder 双击文件打开（对应 Flutter _initNativeFileListener）
+
     // SwiftUI 的 .onOpenURL 已能处理大多数情况，
     // 此方法作为补充，覆盖应用已运行时从 Finder 再次打开文件的场景
     func application(_ application: NSApplication, open urls: [URL]) {
