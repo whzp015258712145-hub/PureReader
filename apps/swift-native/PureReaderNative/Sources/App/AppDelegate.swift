@@ -27,8 +27,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-extension Notification.Name {
+public extension Notification.Name {
     static let openFileURL = Notification.Name("openFileURL")
 }
+
 
 

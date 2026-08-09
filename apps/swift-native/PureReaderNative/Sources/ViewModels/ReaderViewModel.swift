@@ -10,12 +10,13 @@ import AppKit
 import UniformTypeIdentifiers
 
 @MainActor
-class ReaderViewModel: ObservableObject {
-    @Published var content: EbookContent?
-    @Published var config: ReaderConfig
-    @Published var isLoading = false
-    @Published var errorMessage: String?
-    @Published var isSidebarCollapsed = false
+public class ReaderViewModel: ObservableObject {
+    @Published public var content: EbookContent?
+    @Published public var config: ReaderConfig
+    @Published public var isLoading = false
+    @Published public var errorMessage: String?
+    @Published public var isSidebarCollapsed = false
+
 
     private(set) var currentPath: String?
     private let cache = CacheManager()
@@ -31,12 +32,15 @@ class ReaderViewModel: ObservableObject {
         #endif
     }
 
-    init() {
+    public init() {
+
+
         self.config = configStore.load()
+        LocalizationManager.shared.setLanguage(localeString: self.config.locale)
     }
 
     // 对应 Flutter _loadBook()
-    func loadBook(path: String, encoding: String? = nil) async {
+    public func loadBook(path: String, encoding: String? = nil) async {
         trace("loadBook start path=\(path), encoding=\(encoding ?? "auto"), currentPath=\(currentPath ?? "nil")")
         if currentPath == path && encoding == nil {
             trace("loadBook skipped: same path and auto encoding")
@@ -71,7 +75,7 @@ class ReaderViewModel: ObservableObject {
     }
 
     // 对应 Flutter _handleManualOpen()
-    func openFilePicker() {
+    public func openFilePicker() {
         let panel = NSOpenPanel()
         var types: [UTType] = [.pdf, .plainText]
         if let epub = UTType(filenameExtension: "epub") { types.append(epub) }
@@ -87,7 +91,7 @@ class ReaderViewModel: ObservableObject {
     }
 
     // 对应 Flutter openFileWithEncodingProvider 的 RELOAD 逻辑
-    func reloadWithEncoding(_ encoding: String?) {
+    public func reloadWithEncoding(_ encoding: String?) {
         guard let path = currentPath else {
             trace("reloadWithEncoding ignored: currentPath is nil")
             return
@@ -97,96 +101,39 @@ class ReaderViewModel: ObservableObject {
     }
 
     // 对应 Flutter ReaderNotifier 各 update 方法
-    func updateFontSize(_ size: Double) {
+    public func updateFontSize(_ size: Double) {
         config.fontSize = min(max(size, 12.0), 40.0)
         configStore.save(config)
     }
 
-    func updateLineHeight(_ h: Double) {
+    public func updateLineHeight(_ h: Double) {
         config.lineHeight = h
         configStore.save(config)
     }
 
-    func updateFontFamily(_ f: String) {
+    public func updateFontFamily(_ f: String) {
         config.fontFamily = f
         configStore.save(config)
     }
 
-    func setTheme(_ id: String) {
+    public func setTheme(_ id: String) {
         config.themeId = id
         configStore.save(config)
     }
 
-    func setLocale(_ lang: String) {
+    public func setLocale(_ lang: String) {
         config.locale = lang
         configStore.save(config)
-        updateSystemMenuLanguage()
+        LocalizationManager.shared.setLanguage(localeString: lang)
     }
 
-    /// 动态刷新 AppKit NSApp.mainMenu 系统的菜单栏文本（实现无需重启即时变动菜单语言）
-    func updateSystemMenuLanguage() {
-        guard let mainMenu = NSApp.mainMenu else { return }
-
-        let keyMapping: [String: String] = [
-            "Open...": "open_file",
-            "打开...": "open_file",
-
-            "Encoding": "encoding",
-            "编码": "encoding",
-
-            "View": "view",
-            "视图": "view",
-            "Zoom In": "zoom_in",
-            "放大": "zoom_in",
-            "Zoom Out": "zoom_out",
-            "缩小": "zoom_out",
-            "Actual Size": "actual_size",
-            "实际大小": "actual_size",
-            "Toggle Sidebar": "toggle_sidebar",
-            "切换侧边栏": "toggle_sidebar",
-
-            "Theme": "theme",
-            "外观主题": "theme",
-            "Day": "theme_day",
-            "日光": "theme_day",
-            "Night": "theme_night",
-            "夜间": "theme_night",
-            "Muji": "theme_muji",
-            "纸感": "theme_muji",
-            "Forest": "theme_forest",
-            "护眼": "theme_forest",
-
-            "Language": "language",
-            "语言": "language"
-        ]
-
-        func updateMenu(_ menu: NSMenu) {
-            for item in menu.items {
-                if let key = keyMapping[item.title] {
-                    let newTitle = l(key)
-                    item.title = newTitle
-                }
-                if let submenu = item.submenu {
-                    if let key = keyMapping[submenu.title] {
-                        submenu.title = l(key)
-                    }
-                    updateMenu(submenu)
-                }
-            }
-        }
-
-        updateMenu(mainMenu)
+    /// 动态刷新 AppKit NSApp.mainMenu 系统菜单栏文本
+    public func updateSystemMenuLanguage() {
+        LocalizationManager.shared.updateSystemMenuLanguage()
     }
 
-    /// 动态多语言本地化 Lookup（支持随 config.locale 实时切换字符串）
-    func l(_ key: String) -> String {
-        let lang = config.locale.hasPrefix("zh") ? "zh-Hans" : "en"
-        if let path = Bundle.module.path(forResource: lang, ofType: "lproj"),
-           let bundle = Bundle(path: path) {
-            return NSLocalizedString(key, bundle: bundle, comment: "")
-        }
-        return NSLocalizedString(key, bundle: .module, comment: "")
+    /// 动态多语言本地化 Lookup（代理至 LocalizationManager）
+    public func l(_ key: String) -> String {
+        LocalizationManager.shared.string(for: key)
     }
 }
-
-

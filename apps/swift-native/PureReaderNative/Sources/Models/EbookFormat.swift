@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum EbookFormat: String, Codable {
+public enum EbookFormat: String, Codable {
     case epub
     case pdf
     case txt
@@ -15,8 +15,8 @@ enum EbookFormat: String, Codable {
     case azw3
     case fb2
     case unknown
-    
-    var displayName: String {
+
+    public var displayName: String {
         switch self {
         case .epub: return "EPUB"
         case .pdf: return "PDF"
@@ -27,8 +27,8 @@ enum EbookFormat: String, Codable {
         case .unknown: return "Unknown"
         }
     }
-    
-    var fileExtensions: [String] {
+
+    public var fileExtensions: [String] {
         switch self {
         case .epub: return ["epub"]
         case .pdf: return ["pdf"]
@@ -40,4 +40,5 @@ enum EbookFormat: String, Codable {
         }
     }
 }
+
 

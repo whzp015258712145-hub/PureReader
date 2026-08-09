@@ -1,3 +1,7 @@
+/* Top Level Menus */
+"file" = "File";
+"view" = "View";
+
 /* Menu & UI items */
 "open_file" = "Open...";
 "encoding" = "Encoding";

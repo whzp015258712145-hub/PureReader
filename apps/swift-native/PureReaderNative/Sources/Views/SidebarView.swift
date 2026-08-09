@@ -137,6 +137,7 @@ struct SidebarView: View {
 
 }
 
-extension Notification.Name {
+public extension Notification.Name {
     static let showSettings = Notification.Name("showSettings")
 }
+

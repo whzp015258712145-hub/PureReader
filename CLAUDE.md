@@ -8,6 +8,7 @@ PureReader is a high-performance, native macOS multi-format ebook reader develop
 - **Build (Debug):** `swift build` (run inside `apps/swift-native/`)
 - **Build (Release):** `swift build -c release` (run inside `apps/swift-native/`)
 - **Run Application:** `swift run` (run inside `apps/swift-native/`)
+- **Run Automated Tests:** `swift run PureReaderTests` (run inside `apps/swift-native/`)
 - **Launch Script:** `./bin/LaunchSwift.command`
 
 ## Technology Stack & Architecture
@@ -20,12 +21,15 @@ PureReader is a high-performance, native macOS multi-format ebook reader develop
   - `EPUBParser` & `EPUBToHTMLConverter`
   - `MOBIParser` (supported by `PDBDecoder` and `PalmDocDecompressor`)
   - `FB2Parser`, `TXTParser`, `PDFParser`
-- **Services:** `FormatDetector` (magic numbers + extensions), `CacheManager`, `ConfigStore`
+- **Services:** `FormatDetector` (magic numbers + extensions), `CacheManager`, `ConfigStore`, `LocalizationManager`
 
 ## Development Conventions
 - **Source of Truth:** Main development path is located under `apps/swift-native/`.
 - **OpenSpec & Specs:** Follow OpenSpec standards; maintain `openspec/project.md` as the primary project source of truth and update specs in `openspec/` prior to major structural changes.
+- **Decoupled Architecture:** Maintain `LocalizationManager` (`LocalizationManager.shared`) as the single decoupled source of truth for app localization and AppKit system menu bar updates (`NSApp.mainMenu`).
+- **Automated Testing Mandate:** After making any code changes in `apps/swift-native/`, you MUST execute automated tests via `swift run PureReaderTests` and ensure 100% test pass rate before declaring task completion.
 - **Modularity:** Parsers and decoders must be kept decoupled and single-responsibility.
 - **HTML/CSS Generation:** All WebKit HTML wrappers must be generated through `HTMLTemplateBuilder` to enforce centralized theme, typography, and bridge script contracts.
 - **Code Style:** Pure Swift 5.9 conventions, strict MainActor annotations on ViewModels, clean SwiftUI property wrappers.
+
 

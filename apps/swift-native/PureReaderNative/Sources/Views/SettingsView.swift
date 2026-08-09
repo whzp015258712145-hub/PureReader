@@ -7,11 +7,15 @@
 
 import SwiftUI
 
-struct SettingsView: View {
+public struct SettingsView: View {
+
     @EnvironmentObject var vm: ReaderViewModel
     @Environment(\.dismiss) var dismiss
 
-    var body: some View {
+    public init() {}
+
+    public var body: some View {
+
         VStack(alignment: .leading, spacing: 18) {
             Text(vm.l("appearance"))
                 .font(.system(size: 22, weight: .bold))

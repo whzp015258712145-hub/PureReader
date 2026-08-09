@@ -7,33 +7,33 @@
 
 import SwiftUI
 
-struct ReaderTheme: Identifiable, Codable, Equatable {
-    let id: String
-    let name: String
-    let backgroundColor: String  // Hex color
-    let textColor: String
-    let uiOverlayColor: String
-    let accentColor: String
-    
+public struct ReaderTheme: Identifiable, Codable, Equatable {
+    public let id: String
+    public let name: String
+    public let backgroundColor: String  // Hex color
+    public let textColor: String
+    public let uiOverlayColor: String
+    public let accentColor: String
+
     // Convert hex string to Color
-    var backgroundColorValue: Color {
+    public var backgroundColorValue: Color {
         Color(hex: backgroundColor)
     }
-    
-    var textColorValue: Color {
+
+    public var textColorValue: Color {
         Color(hex: textColor)
     }
-    
-    var uiOverlayColorValue: Color {
+
+    public var uiOverlayColorValue: Color {
         Color(hex: uiOverlayColor)
     }
-    
-    var accentColorValue: Color {
+
+    public var accentColorValue: Color {
         Color(hex: accentColor)
     }
-    
+
     // Presets
-    static let day = ReaderTheme(
+    public static let day = ReaderTheme(
         id: "day",
         name: "Day",
         backgroundColor: "#F9F7F1",
@@ -41,8 +41,8 @@ struct ReaderTheme: Identifiable, Codable, Equatable {
         uiOverlayColor: "#EBE8DF",
         accentColor: "#555555"
     )
-    
-    static let night = ReaderTheme(
+
+    public static let night = ReaderTheme(
         id: "night",
         name: "Night",
         backgroundColor: "#1E1E1E",
@@ -50,8 +50,8 @@ struct ReaderTheme: Identifiable, Codable, Equatable {
         uiOverlayColor: "#2C2C2C",
         accentColor: "#888888"
     )
-    
-    static let muji = ReaderTheme(
+
+    public static let muji = ReaderTheme(
         id: "muji",
         name: "Muji",
         backgroundColor: "#F4ECD8",
@@ -59,8 +59,8 @@ struct ReaderTheme: Identifiable, Codable, Equatable {
         uiOverlayColor: "#E6DBBF",
         accentColor: "#7D705C"
     )
-    
-    static let forest = ReaderTheme(
+
+    public static let forest = ReaderTheme(
         id: "forest",
         name: "Forest",
         backgroundColor: "#E3EDCD",
@@ -68,16 +68,16 @@ struct ReaderTheme: Identifiable, Codable, Equatable {
         uiOverlayColor: "#D3E0BA",
         accentColor: "#5A7561"
     )
-    
-    static let allThemes = [day, night, muji, forest]
-    
-    static func fromId(_ id: String) -> ReaderTheme {
+
+    public static let allThemes = [day, night, muji, forest]
+
+    public static func fromId(_ id: String) -> ReaderTheme {
         allThemes.first { $0.id == id } ?? day
     }
 }
 
 // Color extension to support hex strings
-extension Color {
+public extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
@@ -102,4 +102,3 @@ extension Color {
         )
     }
 }
-

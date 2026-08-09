@@ -6,8 +6,12 @@
 //
 
 import SwiftUI
+import PureReaderCore
 
 @main
+
+
+
 struct PureReaderApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var vm = ReaderViewModel()

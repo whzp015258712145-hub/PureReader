@@ -8,10 +8,14 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct ContentView: View {
+public struct ContentView: View {
+
     @EnvironmentObject var vm: ReaderViewModel
 
-    var body: some View {
+    public init() {}
+
+    public var body: some View {
+
         HSplitView {
             if vm.isSidebarCollapsed {
                 collapsedSidebarHandle
