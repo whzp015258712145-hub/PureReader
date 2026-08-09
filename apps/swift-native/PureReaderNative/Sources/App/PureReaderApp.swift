@@ -19,7 +19,11 @@ struct PureReaderApp: App {
                 .environmentObject(vm)
                 .frame(minWidth: 900, minHeight: 600)
                 .background(vm.config.theme.backgroundColorValue)
+                .onAppear {
+                    vm.updateSystemMenuLanguage()
+                }
                 // 响应 SidebarView 的设置按钮通知
+
                 .onReceive(NotificationCenter.default.publisher(for: .showSettings)) { _ in
                     showSettings = true
                 }

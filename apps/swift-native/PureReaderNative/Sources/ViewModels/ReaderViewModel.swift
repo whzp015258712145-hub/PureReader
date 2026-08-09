@@ -120,6 +120,62 @@ class ReaderViewModel: ObservableObject {
     func setLocale(_ lang: String) {
         config.locale = lang
         configStore.save(config)
+        updateSystemMenuLanguage()
+    }
+
+    /// 动态刷新 AppKit NSApp.mainMenu 系统的菜单栏文本（实现无需重启即时变动菜单语言）
+    func updateSystemMenuLanguage() {
+        guard let mainMenu = NSApp.mainMenu else { return }
+
+        let keyMapping: [String: String] = [
+            "Open...": "open_file",
+            "打开...": "open_file",
+
+            "Encoding": "encoding",
+            "编码": "encoding",
+
+            "View": "view",
+            "视图": "view",
+            "Zoom In": "zoom_in",
+            "放大": "zoom_in",
+            "Zoom Out": "zoom_out",
+            "缩小": "zoom_out",
+            "Actual Size": "actual_size",
+            "实际大小": "actual_size",
+            "Toggle Sidebar": "toggle_sidebar",
+            "切换侧边栏": "toggle_sidebar",
+
+            "Theme": "theme",
+            "外观主题": "theme",
+            "Day": "theme_day",
+            "日光": "theme_day",
+            "Night": "theme_night",
+            "夜间": "theme_night",
+            "Muji": "theme_muji",
+            "纸感": "theme_muji",
+            "Forest": "theme_forest",
+            "护眼": "theme_forest",
+
+            "Language": "language",
+            "语言": "language"
+        ]
+
+        func updateMenu(_ menu: NSMenu) {
+            for item in menu.items {
+                if let key = keyMapping[item.title] {
+                    let newTitle = l(key)
+                    item.title = newTitle
+                }
+                if let submenu = item.submenu {
+                    if let key = keyMapping[submenu.title] {
+                        submenu.title = l(key)
+                    }
+                    updateMenu(submenu)
+                }
+            }
+        }
+
+        updateMenu(mainMenu)
     }
 
     /// 动态多语言本地化 Lookup（支持随 config.locale 实时切换字符串）
@@ -132,4 +188,5 @@ class ReaderViewModel: ObservableObject {
         return NSLocalizedString(key, bundle: .module, comment: "")
     }
 }
+
 
