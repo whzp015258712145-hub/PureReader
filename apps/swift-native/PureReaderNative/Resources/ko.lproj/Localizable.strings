@@ -1,0 +1,35 @@
+/* Top Level System Menus */
+"file" = "파일";
+"edit" = "편집";
+"view" = "보기";
+"window" = "윈도우";
+"help" = "도움말";
+
+/* Menu & UI items */
+"open_file" = "열기...";
+"encoding" = "인코딩";
+"zoom_in" = "확대";
+"zoom_out" = "축소";
+"actual_size" = "실제 크기";
+"toggle_sidebar" = "사이드바 전환";
+"theme" = "테마";
+"language" = "언어";
+
+/* Theme names */
+"theme_day" = "주간";
+"theme_night" = "야간";
+"theme_muji" = "무지";
+"theme_forest" = "숲";
+
+/* UI strings */
+"toc" = "목차";
+"no_chapters" = "장 구조가 없습니다";
+"no_chapters_subtitle" = "콘텐츠가 연속으로 표시됩니다";
+"appearance" = "모양";
+"font_family" = "서체";
+"font_size" = "글자 크기";
+"line_height" = "줄 간격";
+"ok" = "확인";
+"open" = "도서 열기";
+"retry" = "다시 시도";
+"unsupported_format" = "지원되지 않는 형식";

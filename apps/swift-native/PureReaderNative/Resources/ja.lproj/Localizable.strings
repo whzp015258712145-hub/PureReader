@@ -1,0 +1,35 @@
+/* Top Level System Menus */
+"file" = "ファイル";
+"edit" = "編集";
+"view" = "表示";
+"window" = "ウィンドウ";
+"help" = "ヘルプ";
+
+/* Menu & UI items */
+"open_file" = "開く...";
+"encoding" = "エンコード";
+"zoom_in" = "拡大";
+"zoom_out" = "縮小";
+"actual_size" = "原寸大";
+"toggle_sidebar" = "サイドバーの切り替え";
+"theme" = "テーマ";
+"language" = "言語";
+
+/* Theme names */
+"theme_day" = "昼間";
+"theme_night" = "夜間";
+"theme_muji" = "無印";
+"theme_forest" = "森林";
+
+/* UI strings */
+"toc" = "目次";
+"no_chapters" = "章構造がありません";
+"no_chapters_subtitle" = "コンテンツは連続して表示されます";
+"appearance" = "外観設定";
+"font_family" = "フォント";
+"font_size" = "文字サイズ";
+"line_height" = "行の高さ";
+"ok" = "OK";
+"open" = "本を開く";
+"retry" = "再試行";
+"unsupported_format" = "サポートされていない形式";

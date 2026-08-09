@@ -105,6 +105,10 @@ struct PureReaderApp: App {
                 Button("中文")     { vm.setLocale("zh") }
                 Button("Deutsch")  { vm.setLocale("de") }
                 Button("Français") { vm.setLocale("fr") }
+                Button("Español")  { vm.setLocale("es") }
+                Button("日本語")   { vm.setLocale("ja") }
+                Button("한국어")   { vm.setLocale("ko") }
+                Button("Italiano") { vm.setLocale("it") }
             }
         }
     }

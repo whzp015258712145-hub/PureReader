@@ -16,6 +16,10 @@ public enum AppLanguage: String, CaseIterable, Identifiable {
     case simplifiedChinese = "zh-Hans"
     case german = "de"
     case french = "fr"
+    case spanish = "es"
+    case japanese = "ja"
+    case korean = "ko"
+    case italian = "it"
 
     public var id: String { rawValue }
 
@@ -25,6 +29,10 @@ public enum AppLanguage: String, CaseIterable, Identifiable {
         case .simplifiedChinese: return "中文"
         case .german: return "Deutsch"
         case .french: return "Français"
+        case .spanish: return "Español"
+        case .japanese: return "日本語"
+        case .korean: return "한국어"
+        case .italian: return "Italiano"
         }
     }
 
@@ -35,6 +43,14 @@ public enum AppLanguage: String, CaseIterable, Identifiable {
             return .german
         } else if localeString.hasPrefix("fr") {
             return .french
+        } else if localeString.hasPrefix("es") {
+            return .spanish
+        } else if localeString.hasPrefix("ja") {
+            return .japanese
+        } else if localeString.hasPrefix("ko") {
+            return .korean
+        } else if localeString.hasPrefix("it") {
+            return .italian
         }
         return .english
     }
@@ -220,96 +236,160 @@ public final class LocalizationManager: ObservableObject {
             }
         }
 
-        // 双向标题与本地化 Key 字典映射表（覆盖英文、中文、德语、法语各种系统默认词条变体）
+        // 双向标题与本地化 Key 字典映射表（覆盖各语言系统默认词条变体）
         let keyMapping: [String: String] = [
             // Top Level System Menus
             "File": "file",
             "文件": "file",
             "Datei": "file",
             "Fichier": "file",
+            "Archivo": "file",
+            "ファイル": "file",
+            "파일": "file",
 
             "Edit": "edit",
             "编辑": "edit",
             "Bearbeiten": "edit",
             "Édition": "edit",
+            "Edición": "edit",
+            "編集": "edit",
+            "편집": "edit",
+            "Modifica": "edit",
 
             "View": "view",
             "显示": "view",
             "视图": "view",
             "Darstellung": "view",
             "Présentation": "view",
+            "Visualización": "view",
+            "表示": "view",
+            "보기": "view",
+            "Vista": "view",
 
             "Window": "window",
             "窗口": "window",
             "Fenster": "window",
             "Fenêtre": "window",
+            "Ventana": "window",
+            "ウィンドウ": "window",
+            "윈도우": "window",
+            "Finestra": "window",
 
             "Help": "help",
             "帮助": "help",
             "Hilfe": "help",
             "Aide": "help",
+            "Ayuda": "help",
+            "ヘルプ": "help",
+            "도움말": "help",
+            "Aiuto": "help",
 
             // Custom Top Level & Submenus
             "Encoding": "encoding",
             "编码": "encoding",
             "Kodierung": "encoding",
             "Encodage": "encoding",
+            "Codificación": "encoding",
+            "エンコード": "encoding",
+            "인코딩": "encoding",
+            "Codifica": "encoding",
 
             "Theme": "theme",
             "外观主题": "theme",
             "主题": "theme",
             "Erscheinungsbild": "theme",
             "Thème": "theme",
+            "Tema": "theme",
+            "テーマ": "theme",
+            "테마": "theme",
 
             "Language": "language",
             "语言": "language",
             "Sprache": "language",
             "Langue": "language",
+            "Idioma": "language",
+            "言語": "language",
+            "언어": "language",
+            "Lingua": "language",
 
             // Submenu Items
             "Open...": "open_file",
             "打开...": "open_file",
             "Öffnen...": "open_file",
             "Ouvrir...": "open_file",
+            "Abrir...": "open_file",
+            "開く...": "open_file",
+            "열기...": "open_file",
+            "Apri...": "open_file",
 
             "Zoom In": "zoom_in",
             "放大": "zoom_in",
             "Vergrößern": "zoom_in",
             "Zoom avant": "zoom_in",
+            "Acercar": "zoom_in",
+            "拡大": "zoom_in",
+            "확대": "zoom_in",
+            "Ingrandisci": "zoom_in",
 
             "Zoom Out": "zoom_out",
             "缩小": "zoom_out",
             "Verkleinern": "zoom_out",
             "Zoom arrière": "zoom_out",
+            "Alejar": "zoom_out",
+            "縮小": "zoom_out",
+            "축소": "zoom_out",
+            "Riduci": "zoom_out",
 
             "Actual Size": "actual_size",
             "实际大小": "actual_size",
             "Originalgröße": "actual_size",
             "Taille réelle": "actual_size",
+            "Tamaño real": "actual_size",
+            "原寸大": "actual_size",
+            "실제 크기": "actual_size",
+            "Dimensioni reali": "actual_size",
 
             "Toggle Sidebar": "toggle_sidebar",
             "切换侧边栏": "toggle_sidebar",
             "Seitenleiste umschalten": "toggle_sidebar",
             "Masquer/Afficher la barre latérale": "toggle_sidebar",
+            "Mostrar/Ocultar barra lateral": "toggle_sidebar",
+            "サイドバーの切り替え": "toggle_sidebar",
+            "사이드바 전환": "toggle_sidebar",
+            "Mostra/Nascondi barra laterale": "toggle_sidebar",
 
             // Themes
             "Day": "theme_day",
             "日光": "theme_day",
             "Tag": "theme_day",
             "Jour": "theme_day",
+            "Día": "theme_day",
+            "昼間": "theme_day",
+            "주간": "theme_day",
+            "Giorno": "theme_day",
 
             "Night": "theme_night",
             "夜间": "theme_night",
             "Nacht": "theme_night",
             "Nuit": "theme_night",
+            "Noche": "theme_night",
+            "夜間": "theme_night",
+            "야간": "theme_night",
+            "Notte": "theme_night",
 
             "Muji": "theme_muji",
             "纸感": "theme_muji",
+            "無印": "theme_muji",
+            "무지": "theme_muji",
 
             "Forest": "theme_forest",
             "护眼": "theme_forest",
             "Wald": "theme_forest",
-            "Forêt": "theme_forest"
+            "Forêt": "theme_forest",
+            "Bosque": "theme_forest",
+            "森林": "theme_forest",
+            "숲": "theme_forest",
+            "Foresta": "theme_forest"
         ]
 
         var updatedCount = 0

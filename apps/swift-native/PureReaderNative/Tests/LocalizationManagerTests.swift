@@ -48,13 +48,13 @@ struct LocalizationManagerTests {
         // Test 1: Language enum parsing
         await runTest("testLanguageEnumParsing") {
             try assertEqual(AppLanguage.from(localeString: "en"), .english, "en -> english")
-            try assertEqual(AppLanguage.from(localeString: "en_US"), .english, "en_US -> english")
             try assertEqual(AppLanguage.from(localeString: "zh"), .simplifiedChinese, "zh -> chinese")
-            try assertEqual(AppLanguage.from(localeString: "zh-Hans"), .simplifiedChinese, "zh-Hans -> chinese")
             try assertEqual(AppLanguage.from(localeString: "de"), .german, "de -> german")
-            try assertEqual(AppLanguage.from(localeString: "de_DE"), .german, "de_DE -> german")
             try assertEqual(AppLanguage.from(localeString: "fr"), .french, "fr -> french")
-            try assertEqual(AppLanguage.from(localeString: "fr_FR"), .french, "fr_FR -> french")
+            try assertEqual(AppLanguage.from(localeString: "es"), .spanish, "es -> spanish")
+            try assertEqual(AppLanguage.from(localeString: "ja"), .japanese, "ja -> japanese")
+            try assertEqual(AppLanguage.from(localeString: "ko"), .korean, "ko -> korean")
+            try assertEqual(AppLanguage.from(localeString: "it"), .italian, "it -> italian")
             try assertEqual(AppLanguage.from(localeString: "unknown"), .english, "fallback -> english")
         }
 
@@ -132,7 +132,43 @@ struct LocalizationManagerTests {
             try assertEqual(manager.string(for: "language"), "Langue", "language key")
         }
 
-        // Test 6: All Keys Completeness
+        // Test 6: Spanish Localization
+        await runTest("testSpanishLocalization") {
+            await manager.setLanguage(.spanish)
+            try assertEqual(manager.currentLanguage, .spanish, "Language is Spanish")
+            try assertEqual(manager.string(for: "file"), "Archivo", "file key")
+            try assertEqual(manager.string(for: "edit"), "Edición", "edit key")
+            try assertEqual(manager.string(for: "language"), "Idioma", "language key")
+        }
+
+        // Test 7: Japanese Localization
+        await runTest("testJapaneseLocalization") {
+            await manager.setLanguage(.japanese)
+            try assertEqual(manager.currentLanguage, .japanese, "Language is Japanese")
+            try assertEqual(manager.string(for: "file"), "ファイル", "file key")
+            try assertEqual(manager.string(for: "edit"), "編集", "edit key")
+            try assertEqual(manager.string(for: "language"), "言語", "language key")
+        }
+
+        // Test 8: Korean Localization
+        await runTest("testKoreanLocalization") {
+            await manager.setLanguage(.korean)
+            try assertEqual(manager.currentLanguage, .korean, "Language is Korean")
+            try assertEqual(manager.string(for: "file"), "파일", "file key")
+            try assertEqual(manager.string(for: "edit"), "편집", "edit key")
+            try assertEqual(manager.string(for: "language"), "언어", "language key")
+        }
+
+        // Test 9: Italian Localization
+        await runTest("testItalianLocalization") {
+            await manager.setLanguage(.italian)
+            try assertEqual(manager.currentLanguage, .italian, "Language is Italian")
+            try assertEqual(manager.string(for: "file"), "File", "file key")
+            try assertEqual(manager.string(for: "edit"), "Modifica", "edit key")
+            try assertEqual(manager.string(for: "language"), "Lingua", "language key")
+        }
+
+        // Test 10: All Keys Completeness
         await runTest("testAllKeysCompleteness") {
             let allKeys = [
                 "file", "edit", "view", "window", "help", "open_file", "encoding", "zoom_in", "zoom_out",

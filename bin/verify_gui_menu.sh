@@ -19,7 +19,7 @@ fi
 # 抓取当前“语言”菜单下的所有实际子菜单项名称
 MENU_ITEMS=$(osascript -e 'tell application "System Events"
 	repeat with mItem in menu bar items of menu bar 1 of process "PureReader"
-		if name of mItem is in {"语言", "Language", "Sprache", "Langue"} then
+		if name of mItem is in {"语言", "Language", "Sprache", "Langue", "Idioma", "言語", "언어", "Lingua"} then
 			return name of menu items of menu 1 of mItem
 		end if
 	end repeat
@@ -28,9 +28,9 @@ end tell')
 echo "📊 当前菜单栏 [语言] 子菜单实测渲染项:"
 echo "   -> $MENU_ITEMS"
 
-if [[ "$MENU_ITEMS" == *"English"* ]] && [[ "$MENU_ITEMS" == *"中文"* ]] && [[ "$MENU_ITEMS" == *"Deutsch"* ]] && [[ "$MENU_ITEMS" == *"Français"* ]]; then
+if [[ "$MENU_ITEMS" == *"English"* ]] && [[ "$MENU_ITEMS" == *"中文"* ]] && [[ "$MENU_ITEMS" == *"Deutsch"* ]] && [[ "$MENU_ITEMS" == *"Français"* ]] && [[ "$MENU_ITEMS" == *"Español"* ]] && [[ "$MENU_ITEMS" == *"日本語"* ]] && [[ "$MENU_ITEMS" == *"한국어"* ]] && [[ "$MENU_ITEMS" == *"Italiano"* ]]; then
   echo "------------------------------------------------"
-  echo "🎉 ✅ [GUI Audit SUCCESS] 实测渲染包含完整 4 种语言选项：English, 中文, Deutsch, Français！"
+  echo "🎉 ✅ [GUI Audit SUCCESS] 实测渲染包含完整 8 种语言选项：English, 中文, Deutsch, Français, Español, 日本語, 한국어, Italiano！"
   echo "------------------------------------------------"
   exit 0
 else
