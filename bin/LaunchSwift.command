@@ -25,6 +25,9 @@ if [ -f "$SWIFT_ROOT/Package.swift" ]; then
 
   cp "$SWIFT_ROOT/.build/debug/PureReader" "$APP_BUNDLE/Contents/MacOS/PureReader"
 
+  # 同步 Swift SPM 编译出的所有资源 Bundle（包含 Localizable.strings 语言包）
+  cp -R "$SWIFT_ROOT/.build/debug/"*.bundle "$APP_BUNDLE/Contents/Resources/" 2>/dev/null || true
+
   # 写入/生成 Info.plist，使顶部菜单栏显示为 PureReader 并支持菜单调试与文件关联
   if [ -f "$SWIFT_ROOT/PureReaderNative/Resources/Info.plist" ]; then
     sed -e 's/\$(EXECUTABLE_NAME)/PureReader/g' \
