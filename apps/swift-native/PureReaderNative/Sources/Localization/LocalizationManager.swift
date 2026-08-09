@@ -52,8 +52,9 @@ public final class LocalizationManager: ObservableObject {
         setupMenuRebuildObservers()
     }
 
-    /// 监听 AppKit 菜单重新渲染与应用激活通知，解决 SwiftUI 点击按钮重构 .commands 导致菜单还原为默认语言的 Bug
+    /// 监听 AppKit 菜单生命周期、窗口焦点变动与 App 激活通知
     private func setupMenuRebuildObservers() {
+        // 1. SwiftUI / AppKit 动态添加菜单项
         NotificationCenter.default.publisher(for: NSMenu.didAddItemNotification)
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
@@ -61,10 +62,27 @@ public final class LocalizationManager: ObservableObject {
             }
             .store(in: &cancellables)
 
+        // 2. 菜单跟踪结束（用户点击菜单项松开鼠标瞬间）
+        NotificationCenter.default.publisher(for: NSMenu.didEndTrackingNotification)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.scheduleMenuUpdate(reason: "NSMenu.didEndTrackingNotification")
+            }
+            .store(in: &cancellables)
+
+        // 3. 应用获得焦点
         NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.scheduleMenuUpdate(reason: "NSApplication.didBecomeActiveNotification")
+            }
+            .store(in: &cancellables)
+
+        // 4. 窗口/Sheet 弹窗关闭并重获焦点
+        NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.scheduleMenuUpdate(reason: "NSWindow.didBecomeKeyNotification")
             }
             .store(in: &cancellables)
     }
@@ -80,11 +98,22 @@ public final class LocalizationManager: ObservableObject {
         updateTask?.cancel()
         updateTask = Task { @MainActor [weak self] in
             guard let self = self else { return }
-            // 延迟 40ms 确保 SwiftUI 完成 AppKit NSMenu DOM 树节点挂载
-            try? await Task.sleep(nanoseconds: 40_000_000)
+            // 延迟一小帧等待 AppKit 重新布局菜单节点
+            try? await Task.sleep(nanoseconds: 30_000_000)
             if !Task.isCancelled {
                 self.logger.info("🌐 [LocalizationManager] Executing scheduled system menu update. Reason: \(reason, privacy: .public)")
                 self.updateSystemMenuLanguage()
+            }
+        }
+    }
+
+    /// 阶梯式连续更新（针对切换语言后的 Popover/Sheet 动画过渡期）
+    private func scheduleStaggeredUpdates() {
+        let delaysInMs = [50, 150, 300, 500]
+        for delay in delaysInMs {
+            Task { @MainActor [weak self] in
+                try? await Task.sleep(nanoseconds: UInt64(delay) * 1_000_000)
+                self?.scheduleMenuUpdate(reason: "Staggered update (\(delay)ms)")
             }
         }
     }
@@ -98,7 +127,9 @@ public final class LocalizationManager: ObservableObject {
         UserDefaults.standard.set([language.rawValue], forKey: "AppleLanguages")
         UserDefaults.standard.synchronize()
 
+        // 立即刷新并触发阶梯式补刷，确保动画过渡期 100% 覆盖
         updateSystemMenuLanguage()
+        scheduleStaggeredUpdates()
     }
 
     /// 切换应用语言（根据 locale 字符串如 "en" 或 "zh"）
