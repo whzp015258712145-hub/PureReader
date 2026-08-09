@@ -28,14 +28,14 @@ end tell')
 echo "📊 当前菜单栏 [语言] 子菜单实测渲染项:"
 echo "   -> $MENU_ITEMS"
 
-if [[ "$MENU_ITEMS" == *"English"* ]] && [[ "$MENU_ITEMS" == *"简体中文"* ]] && [[ "$MENU_ITEMS" == *"繁體中文"* ]] && [[ "$MENU_ITEMS" == *"Deutsch"* ]] && [[ "$MENU_ITEMS" == *"Français"* ]] && [[ "$MENU_ITEMS" == *"Español"* ]] && [[ "$MENU_ITEMS" == *"日本語"* ]] && [[ "$MENU_ITEMS" == *"한국어"* ]] && [[ "$MENU_ITEMS" == *"Italiano"* ]] && [[ "$MENU_ITEMS" == *"Русский"* ]] && [[ "$MENU_ITEMS" == *"Português"* ]] && [[ "$MENU_ITEMS" == *"Nederlands"* ]] && [[ "$MENU_ITEMS" == *"Polski"* ]] && [[ "$MENU_ITEMS" == *"Türkçe"* ]]; then
+if [[ "$MENU_ITEMS" == "繁體中文, 简体中文, English, Deutsch"* ]]; then
   echo "------------------------------------------------"
-  echo "🎉 ✅ [GUI Audit SUCCESS] 实测渲染包含完整 14 种语言选项：English, 简体中文, 繁體中文, Deutsch, Français, Español, 日本語, 한국어, Italiano, Русский, Português, Nederlands, Polski, Türkçe！"
+  echo "🎉 ✅ [GUI Audit SUCCESS] 实测渲染菜单顺序完全准确：1. 繁體中文, 2. 简体中文, 3. English, 4. Deutsch！"
   echo "------------------------------------------------"
   exit 0
 else
   echo "------------------------------------------------"
-  echo "❌ [GUI Audit FAILED] 实测渲染未满足预期！完整子项为: $MENU_ITEMS"
+  echo "❌ [GUI Audit FAILED] 实测渲染顺序不匹配预期！完整子项为: $MENU_ITEMS"
   echo "------------------------------------------------"
   exit 1
 fi

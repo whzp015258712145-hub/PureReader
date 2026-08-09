@@ -101,9 +101,9 @@ struct PureReaderApp: App {
 
             // 语言菜单（对应 Flutter PlatformMenu('语言')）
             CommandMenu(localization.string(for: "language")) {
-                Button("English")    { vm.setLocale("en") }
-                Button("简体中文")   { vm.setLocale("zh-Hans") }
                 Button("繁體中文")   { vm.setLocale("zh-Hant") }
+                Button("简体中文")   { vm.setLocale("zh-Hans") }
+                Button("English")    { vm.setLocale("en") }
                 Button("Deutsch")    { vm.setLocale("de") }
                 Button("Français")   { vm.setLocale("fr") }
                 Button("Español")    { vm.setLocale("es") }
