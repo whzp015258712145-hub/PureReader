@@ -6,16 +6,17 @@
 //
 
 import SwiftUI
+import Inject
 
 public struct SettingsView: View {
-
+    @ObserveInjection var inject
     @EnvironmentObject var vm: ReaderViewModel
+
     @Environment(\.dismiss) var dismiss
 
     public init() {}
 
     public var body: some View {
-
         VStack(alignment: .leading, spacing: 18) {
             Text(vm.l("appearance"))
                 .font(.system(size: 22, weight: .bold))
@@ -112,7 +113,9 @@ public struct SettingsView: View {
         .padding(24)
         .frame(width: 340, height: 420)
         .background(vm.config.theme.backgroundColorValue)
+        .enableInjection()
     }
+
 
     private var fontPickerTextColor: Color {
         vm.config.theme.textColorValue

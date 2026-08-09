@@ -18,13 +18,15 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.0")
+        .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.0"),
+        .package(url: "https://github.com/krzysztofzablocki/Inject.git", from: "1.2.0")
     ],
     targets: [
         .target(
             name: "PureReaderCore",
             dependencies: [
-                .product(name: "ZIPFoundation", package: "ZIPFoundation")
+                .product(name: "ZIPFoundation", package: "ZIPFoundation"),
+                .product(name: "Inject", package: "Inject")
             ],
             path: "PureReaderNative",
             exclude: ["Resources/Info.plist", "Tests", "Sources/App"],
@@ -33,7 +35,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "PureReader",
-            dependencies: ["PureReaderCore"],
+            dependencies: [
+                "PureReaderCore",
+                .product(name: "Inject", package: "Inject")
+            ],
             path: "PureReaderNative/Sources/App"
         ),
         .executableTarget(

@@ -8,9 +8,10 @@
 //
 
 import SwiftUI
+import Inject
 
 struct ReaderView: View {
-
+    @ObserveInjection var inject
     @EnvironmentObject var vm: ReaderViewModel
 
     var body: some View {
@@ -64,5 +65,7 @@ struct ReaderView: View {
                 EmptyStateView()
             }
         }
+        .enableInjection()
     }
 }
+

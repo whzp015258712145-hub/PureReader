@@ -15,8 +15,9 @@ echo "------------------------------------------------"
 
 # 优先编译并打包成 macOS App Bundle 运行（确保 macOS 顶部菜单栏正确显示为 PureReader）
 if [ -f "$SWIFT_ROOT/Package.swift" ]; then
-  echo "📦 正在编译 Swift Package..."
-  swift build --package-path "$SWIFT_ROOT"
+  echo "📦 正在编译 Swift Package (已开启 Inject 热重载支持)..."
+  swift build --package-path "$SWIFT_ROOT" -Xlinker -interposable
+
 
   APP_BUNDLE="$SWIFT_ROOT/.build/PureReader.app"
   mkdir -p "$APP_BUNDLE/Contents/MacOS"

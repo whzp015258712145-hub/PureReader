@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import Inject
 
 struct EmptyStateView: View {
+    @ObserveInjection var inject
     @EnvironmentObject var vm: ReaderViewModel
 
     var body: some View {
@@ -22,5 +24,7 @@ struct EmptyStateView: View {
             .tint(vm.config.theme.accentColorValue)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .enableInjection()
     }
 }
+

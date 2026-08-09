@@ -6,13 +6,16 @@
 //
 
 import SwiftUI
+import Inject
 
 struct SidebarView: View {
+    @ObserveInjection var inject
     @EnvironmentObject var vm: ReaderViewModel
     @State private var selectedChapterIndex: Int?
     var onChapterTap: ((Int) -> Void)?
 
     var body: some View {
+
         GeometryReader { proxy in
             VStack(alignment: .leading, spacing: 0) {
                 Color.clear

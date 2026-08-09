@@ -7,15 +7,16 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import Inject
 
 public struct ContentView: View {
-
+    @ObserveInjection var inject
     @EnvironmentObject var vm: ReaderViewModel
+
 
     public init() {}
 
     public var body: some View {
-
         HSplitView {
             if vm.isSidebarCollapsed {
                 collapsedSidebarHandle
@@ -44,7 +45,9 @@ public struct ContentView: View {
             }
             return true
         }
+        .enableInjection()
     }
+
 
     private var collapsedSidebarHandle: some View {
         GeometryReader { proxy in
