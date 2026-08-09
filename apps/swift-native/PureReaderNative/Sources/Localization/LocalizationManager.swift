@@ -526,6 +526,11 @@ public final class LocalizationManager: ObservableObject {
                             submenu.title = newTitle
                             updatedCount += 1
                         }
+                        if key == "window" {
+                            NSApplication.shared.windowsMenu = submenu
+                        } else if key == "help" {
+                            NSApplication.shared.helpMenu = submenu
+                        }
                     }
                 } else if !item.title.isEmpty && item.title != "PureReader" && !item.isSeparatorItem {
                     logger.notice("ℹ️ [LocalizationManager] Unmapped menu item encountered: '\(item.title, privacy: .public)'")
