@@ -28,6 +28,27 @@ if [ -f "$SWIFT_ROOT/Package.swift" ]; then
   # 同步 Swift SPM 编译出的所有资源 Bundle（包含 Localizable.strings 语言包）
   cp -R "$SWIFT_ROOT/.build/debug/"*.bundle "$APP_BUNDLE/Contents/Resources/" 2>/dev/null || true
 
+  # 编译并嵌入 App 图标（将 .appiconset 转为 .icns 后放入 Resources/）
+  APPICONSET="$SWIFT_ROOT/PureReaderNative/Resources/AppIcon.appiconset"
+  ICNS_OUT="$APP_BUNDLE/Contents/Resources/AppIcon.icns"
+  if [ -d "$APPICONSET" ]; then
+    ICONSET_TMP="$(mktemp -d)/AppIcon.iconset"
+    mkdir -p "$ICONSET_TMP"
+    cp "$APPICONSET/icon_16x16.png"    "$ICONSET_TMP/icon_16x16.png"
+    cp "$APPICONSET/icon_16x16@2x.png" "$ICONSET_TMP/icon_16x16@2x.png"
+    cp "$APPICONSET/icon_32x32.png"    "$ICONSET_TMP/icon_32x32.png"
+    cp "$APPICONSET/icon_32x32@2x.png" "$ICONSET_TMP/icon_32x32@2x.png"
+    cp "$APPICONSET/icon_128x128.png"    "$ICONSET_TMP/icon_128x128.png"
+    cp "$APPICONSET/icon_128x128@2x.png" "$ICONSET_TMP/icon_128x128@2x.png"
+    cp "$APPICONSET/icon_256x256.png"    "$ICONSET_TMP/icon_256x256.png"
+    cp "$APPICONSET/icon_256x256@2x.png" "$ICONSET_TMP/icon_256x256@2x.png"
+    cp "$APPICONSET/icon_512x512.png"    "$ICONSET_TMP/icon_512x512.png"
+    cp "$APPICONSET/icon_512x512@2x.png" "$ICONSET_TMP/icon_512x512@2x.png"
+    iconutil -c icns "$ICONSET_TMP" -o "$ICNS_OUT"
+    rm -rf "$(dirname "$ICONSET_TMP")"
+    echo "🎨 App 图标已嵌入: $ICNS_OUT"
+  fi
+
   # 写入/生成 Info.plist，使顶部菜单栏显示为 PureReader 并支持菜单调试与文件关联
   if [ -f "$SWIFT_ROOT/PureReaderNative/Resources/Info.plist" ]; then
     sed -e 's/\$(EXECUTABLE_NAME)/PureReader/g' \
