@@ -33,7 +33,5 @@ PureReader is a high-performance, native macOS multi-format ebook reader develop
 - **Automated Testing Mandate:** After making any code changes in `apps/swift-native/`, you MUST execute automated tests via `swift run PureReaderTests` and ensure 100% test pass rate before declaring task completion.
 - **Modularity:** Parsers and decoders must be kept decoupled and single-responsibility.
 - **HTML/CSS Generation:** All WebKit HTML wrappers must be generated through `HTMLTemplateBuilder` to enforce centralized theme, typography, and bridge script contracts.
+- **查看历史记忆/日志规范 (Transcript Audit Rule):** 在检索或复盘历史对话日志 (`transcript.jsonl`) 时，严禁仅读取文件顶部的初始记录，必须优先读取文件尾部 (Tail Lines) 或更高行数范围，以确保准确捕获最新交互上下文与开发记录。
 - **Code Style:** Pure Swift 5.9 conventions, strict MainActor annotations on ViewModels, clean SwiftUI property wrappers.
-
-
-
