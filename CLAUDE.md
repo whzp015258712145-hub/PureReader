@@ -10,6 +10,8 @@ PureReader is a high-performance, native macOS multi-format ebook reader develop
 - **Run Application:** `swift run` (run inside `apps/swift-native/`)
 - **Run Automated Tests:** `swift run PureReaderTests` (run inside `apps/swift-native/`)
 - **Launch Script:** `./bin/LaunchSwift.command`
+- **Live Reload Development:** `./bin/DevSwift.command` (auto-build & reload on save)
+
 
 ## Technology Stack & Architecture
 - **Language & UI:** Swift 5.9+, SwiftUI, AppKit
