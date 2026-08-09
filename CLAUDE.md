@@ -30,6 +30,7 @@ PureReader is a high-performance, native macOS multi-format ebook reader develop
 - **Internal Docs Isolation:** All project-internal technical documentation, architecture notes, or temporary developer records MUST be written into `docs/` or `doc/` directories.
 - **Git Ignore for Internal Docs:** `docs/` and `doc/` directories MUST be listed in `.gitignore` and kept OUT of git version control.
 - **Debug Screenshot Auto-Clean Mandate:** Any temporary debug screenshots (`shot_*.png` or `.tempmediaStorage` caches) captured during visual layout debugging MUST be deleted immediately after viewing/verification so they never accumulate or consume disk space.
+- **Code Over Documentation Rule (文档与代码冲突以代码为准):** If there is any discrepancy or conflict between documentation (including markdown files, design notes, or comments) and the actual source code, the executable source code in `apps/swift-native/` is ALWAYS the ultimate source of truth.
 
 ## Development & Code Conventions
 - **Source of Truth:** Main development path is located under `apps/swift-native/`.
