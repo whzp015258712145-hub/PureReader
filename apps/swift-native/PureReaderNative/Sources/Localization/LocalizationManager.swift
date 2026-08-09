@@ -14,6 +14,8 @@ import os
 public enum AppLanguage: String, CaseIterable, Identifiable {
     case english = "en"
     case simplifiedChinese = "zh-Hans"
+    case german = "de"
+    case french = "fr"
 
     public var id: String { rawValue }
 
@@ -21,12 +23,18 @@ public enum AppLanguage: String, CaseIterable, Identifiable {
         switch self {
         case .english: return "English"
         case .simplifiedChinese: return "中文"
+        case .german: return "Deutsch"
+        case .french: return "Français"
         }
     }
 
     public static func from(localeString: String) -> AppLanguage {
         if localeString.hasPrefix("zh") {
             return .simplifiedChinese
+        } else if localeString.hasPrefix("de") {
+            return .german
+        } else if localeString.hasPrefix("fr") {
+            return .french
         }
         return .english
     }
@@ -193,51 +201,96 @@ public final class LocalizationManager: ObservableObject {
             }
         }
 
-        // 双向标题与本地化 Key 字典映射表（覆盖英文与中文各种系统默认词条变体）
+        // 双向标题与本地化 Key 字典映射表（覆盖英文、中文、德语、法语各种系统默认词条变体）
         let keyMapping: [String: String] = [
             // Top Level System Menus
             "File": "file",
             "文件": "file",
+            "Datei": "file",
+            "Fichier": "file",
+
             "Edit": "edit",
             "编辑": "edit",
+            "Bearbeiten": "edit",
+            "Édition": "edit",
+
             "View": "view",
             "显示": "view",
             "视图": "view",
+            "Darstellung": "view",
+            "Présentation": "view",
+
             "Window": "window",
             "窗口": "window",
+            "Fenster": "window",
+            "Fenêtre": "window",
+
             "Help": "help",
             "帮助": "help",
+            "Hilfe": "help",
+            "Aide": "help",
 
             // Custom Top Level & Submenus
             "Encoding": "encoding",
             "编码": "encoding",
+            "Kodierung": "encoding",
+            "Encodage": "encoding",
+
             "Theme": "theme",
             "外观主题": "theme",
             "主题": "theme",
+            "Erscheinungsbild": "theme",
+            "Thème": "theme",
+
             "Language": "language",
             "语言": "language",
+            "Sprache": "language",
+            "Langue": "language",
 
             // Submenu Items
             "Open...": "open_file",
             "打开...": "open_file",
+            "Öffnen...": "open_file",
+            "Ouvrir...": "open_file",
+
             "Zoom In": "zoom_in",
             "放大": "zoom_in",
+            "Vergrößern": "zoom_in",
+            "Zoom avant": "zoom_in",
+
             "Zoom Out": "zoom_out",
             "缩小": "zoom_out",
+            "Verkleinern": "zoom_out",
+            "Zoom arrière": "zoom_out",
+
             "Actual Size": "actual_size",
             "实际大小": "actual_size",
+            "Originalgröße": "actual_size",
+            "Taille réelle": "actual_size",
+
             "Toggle Sidebar": "toggle_sidebar",
             "切换侧边栏": "toggle_sidebar",
+            "Seitenleiste umschalten": "toggle_sidebar",
+            "Masquer/Afficher la barre latérale": "toggle_sidebar",
 
             // Themes
             "Day": "theme_day",
             "日光": "theme_day",
+            "Tag": "theme_day",
+            "Jour": "theme_day",
+
             "Night": "theme_night",
             "夜间": "theme_night",
+            "Nacht": "theme_night",
+            "Nuit": "theme_night",
+
             "Muji": "theme_muji",
             "纸感": "theme_muji",
+
             "Forest": "theme_forest",
-            "护眼": "theme_forest"
+            "护眼": "theme_forest",
+            "Wald": "theme_forest",
+            "Forêt": "theme_forest"
         ]
 
         var updatedCount = 0
