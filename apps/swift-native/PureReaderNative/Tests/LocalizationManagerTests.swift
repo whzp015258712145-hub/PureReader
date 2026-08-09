@@ -228,6 +228,15 @@ struct LocalizationManagerTests {
             try assertEqual(helpItem.title, "Help", "Help menu title in English")
         }
 
+        // Test 7: Resource Bundle & Language Pack Integrity Audit
+        await runTest("testResourceBundleIntegrityAudit") {
+            let auditResults = await manager.validateAndLogResourceIntegrity()
+            for lang in AppLanguage.allCases {
+                let isLoaded = auditResults[lang] ?? false
+                try assertTrue(isLoaded, "Resource bundle for '\(lang.rawValue)' (\(lang.displayName)) must be successfully loaded and non-empty")
+            }
+        }
+
         print("------------------------------------------------")
         if failedCount == 0 {
             print("🎉 ALL \(passedCount) TEST SUITES PASSED (100% SUCCESS)")

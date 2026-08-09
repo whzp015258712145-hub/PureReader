@@ -58,6 +58,25 @@ public final class LocalizationManager: ObservableObject {
 
     private init() {
         setupMenuRebuildObservers()
+        validateAndLogResourceIntegrity()
+    }
+
+    /// 校验并在控制台输出所有受支持语言包的装载日志（防范 App Bundle 打包资源缺失）
+    @discardableResult
+    public func validateAndLogResourceIntegrity() -> [AppLanguage: Bool] {
+        logger.info("🔍 [LocalizationManager] Starting startup resource bundle integrity audit...")
+        var results: [AppLanguage: Bool] = [:]
+        for lang in AppLanguage.allCases {
+            let strings = loadStrings(for: lang)
+            let isLoaded = !strings.isEmpty
+            results[lang] = isLoaded
+            if !isLoaded {
+                logger.error("❌ [LocalizationManager] CRITICAL: Language pack '\(lang.rawValue, privacy: .public)' (\(lang.displayName, privacy: .public)) failed to load or is empty! Module bundle path: '\(Bundle.module.bundlePath, privacy: .public)'")
+            } else {
+                logger.info("✅ [LocalizationManager] Verified language pack '\(lang.rawValue, privacy: .public)' (\(lang.displayName, privacy: .public)) loaded \(strings.count) keys successfully.")
+            }
+        }
+        return results
     }
 
     /// 监听 AppKit 菜单生命周期、窗口焦点变动与 App 激活通知
