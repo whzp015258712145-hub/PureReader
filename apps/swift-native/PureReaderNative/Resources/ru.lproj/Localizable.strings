@@ -1,0 +1,35 @@
+/* Top Level System Menus */
+"file" = "Файл";
+"edit" = "Правка";
+"view" = "Вид";
+"window" = "Окно";
+"help" = "Справка";
+
+/* Menu & UI items */
+"open_file" = "Открыть...";
+"encoding" = "Кодировка";
+"zoom_in" = "Увеличить";
+"zoom_out" = "Уменьшить";
+"actual_size" = "Реальный размер";
+"toggle_sidebar" = "Переключить боковую панель";
+"theme" = "Тема";
+"language" = "Язык";
+
+/* Theme names */
+"theme_day" = "Дневная";
+"theme_night" = "Ночная";
+"theme_muji" = "Бумажная";
+"theme_forest" = "Лесная";
+
+/* UI strings */
+"toc" = "Содержание";
+"no_chapters" = "Нет структуры глав";
+"no_chapters_subtitle" = "Содержимое будет отображаться непрерывно";
+"appearance" = "Внешний вид";
+"font_family" = "Шрифт";
+"font_size" = "Размер шрифта";
+"line_height" = "Высота строки";
+"ok" = "ОК";
+"open" = "Открыть книгу";
+"retry" = "Повторить";
+"unsupported_format" = "Неподдерживаемый формат";

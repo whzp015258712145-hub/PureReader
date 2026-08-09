@@ -1,0 +1,35 @@
+/* Top Level System Menus */
+"file" = "Dosya";
+"edit" = "Düzen";
+"view" = "Görüntü";
+"window" = "Pencere";
+"help" = "Yardım";
+
+/* Menu & UI items */
+"open_file" = "Aç...";
+"encoding" = "Kodlama";
+"zoom_in" = "Yakınlaştır";
+"zoom_out" = "Uzaklaştır";
+"actual_size" = "Gerçek Boyut";
+"toggle_sidebar" = "Kenar Çubuğunu Aç/Kapat";
+"theme" = "Tema";
+"language" = "Dil";
+
+/* Theme names */
+"theme_day" = "Gündüz";
+"theme_night" = "Gece";
+"theme_muji" = "Muji";
+"theme_forest" = "Orman";
+
+/* UI strings */
+"toc" = "İçindekiler";
+"no_chapters" = "Bölüm yapısı yok";
+"no_chapters_subtitle" = "İçerik kesintisiz olarak görüntülenecektir";
+"appearance" = "Görünüm";
+"font_family" = "Yazı Tipi";
+"font_size" = "Yazı Boyutu";
+"line_height" = "Satır Yüksekliği";
+"ok" = "Tamam";
+"open" = "Kitap Aç";
+"retry" = "Yeniden Dene";
+"unsupported_format" = "Desteklenmeyen biçim";

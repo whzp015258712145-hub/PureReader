@@ -14,30 +14,44 @@ import os
 public enum AppLanguage: String, CaseIterable, Identifiable {
     case english = "en"
     case simplifiedChinese = "zh-Hans"
+    case traditionalChinese = "zh-Hant"
     case german = "de"
     case french = "fr"
     case spanish = "es"
     case japanese = "ja"
     case korean = "ko"
     case italian = "it"
+    case russian = "ru"
+    case portuguese = "pt"
+    case dutch = "nl"
+    case polish = "pl"
+    case turkish = "tr"
 
     public var id: String { rawValue }
 
     public var displayName: String {
         switch self {
         case .english: return "English"
-        case .simplifiedChinese: return "中文"
+        case .simplifiedChinese: return "简体中文"
+        case .traditionalChinese: return "繁體中文"
         case .german: return "Deutsch"
         case .french: return "Français"
         case .spanish: return "Español"
         case .japanese: return "日本語"
         case .korean: return "한국어"
         case .italian: return "Italiano"
+        case .russian: return "Русский"
+        case .portuguese: return "Português"
+        case .dutch: return "Nederlands"
+        case .polish: return "Polski"
+        case .turkish: return "Türkçe"
         }
     }
 
     public static func from(localeString: String) -> AppLanguage {
-        if localeString.hasPrefix("zh") {
+        if localeString.hasPrefix("zh-Hant") || localeString.hasPrefix("zh-TW") || localeString.hasPrefix("zh-HK") {
+            return .traditionalChinese
+        } else if localeString.hasPrefix("zh") {
             return .simplifiedChinese
         } else if localeString.hasPrefix("de") {
             return .german
@@ -51,6 +65,16 @@ public enum AppLanguage: String, CaseIterable, Identifiable {
             return .korean
         } else if localeString.hasPrefix("it") {
             return .italian
+        } else if localeString.hasPrefix("ru") {
+            return .russian
+        } else if localeString.hasPrefix("pt") {
+            return .portuguese
+        } else if localeString.hasPrefix("nl") {
+            return .dutch
+        } else if localeString.hasPrefix("pl") {
+            return .polish
+        } else if localeString.hasPrefix("tr") {
+            return .turkish
         }
         return .english
     }
@@ -236,91 +260,137 @@ public final class LocalizationManager: ObservableObject {
             }
         }
 
-        // 双向标题与本地化 Key 字典映射表（覆盖各语言系统默认词条变体）
+        // 双向标题与本地化 Key 字典映射表（覆盖 14 种语言系统默认词条变体）
         let keyMapping: [String: String] = [
             // Top Level System Menus
             "File": "file",
             "文件": "file",
+            "檔案": "file",
             "Datei": "file",
             "Fichier": "file",
             "Archivo": "file",
             "ファイル": "file",
             "파일": "file",
+            "Файл": "file",
+            "Ficheiro": "file",
+            "Bestand": "file",
+            "Plik": "file",
+            "Dosya": "file",
 
             "Edit": "edit",
             "编辑": "edit",
+            "編輯": "edit",
             "Bearbeiten": "edit",
             "Édition": "edit",
             "Edición": "edit",
             "編集": "edit",
             "편집": "edit",
             "Modifica": "edit",
+            "Правка": "edit",
+            "Editar": "edit",
+            "Bewerken": "edit",
+            "Edycja": "edit",
+            "Düzen": "edit",
 
             "View": "view",
             "显示": "view",
             "视图": "view",
+            "顯示": "view",
             "Darstellung": "view",
             "Présentation": "view",
             "Visualización": "view",
             "表示": "view",
             "보기": "view",
             "Vista": "view",
+            "Вид": "view",
+            "Visualizar": "view",
+            "Weergave": "view",
+            "Widok": "view",
+            "Görüntü": "view",
 
             "Window": "window",
             "窗口": "window",
+            "視窗": "window",
             "Fenster": "window",
             "Fenêtre": "window",
             "Ventana": "window",
             "ウィンドウ": "window",
             "윈도우": "window",
             "Finestra": "window",
+            "Окно": "window",
+            "Janela": "window",
+            "Venster": "window",
+            "Okno": "window",
+            "Pencere": "window",
 
             "Help": "help",
             "帮助": "help",
+            "說明": "help",
             "Hilfe": "help",
             "Aide": "help",
             "Ayuda": "help",
             "ヘルプ": "help",
             "도움말": "help",
             "Aiuto": "help",
+            "Справка": "help",
+            "Ajuda": "help",
+            "Pomoc": "help",
+            "Yardım": "help",
 
             // Custom Top Level & Submenus
             "Encoding": "encoding",
             "编码": "encoding",
+            "編碼": "encoding",
             "Kodierung": "encoding",
             "Encodage": "encoding",
             "Codificación": "encoding",
             "エンコード": "encoding",
             "인코딩": "encoding",
             "Codifica": "encoding",
+            "Кодировка": "encoding",
+            "Codering": "encoding",
+            "Kodowanie": "encoding",
+            "Kodlama": "encoding",
 
             "Theme": "theme",
             "外观主题": "theme",
-            "主题": "theme",
+            "主題": "theme",
             "Erscheinungsbild": "theme",
             "Thème": "theme",
             "Tema": "theme",
             "テーマ": "theme",
-            "테마": "theme",
+            "테ма": "theme",
+            "Тема": "theme",
+            "Thema": "theme",
+            "Motyw": "theme",
 
             "Language": "language",
             "语言": "language",
+            "語言": "language",
             "Sprache": "language",
             "Langue": "language",
             "Idioma": "language",
             "言語": "language",
             "언어": "language",
             "Lingua": "language",
+            "Язык": "language",
+            "Taal": "language",
+            "Język": "language",
+            "Dil": "language",
 
             // Submenu Items
             "Open...": "open_file",
             "打开...": "open_file",
+            "開啟...": "open_file",
             "Öffnen...": "open_file",
             "Ouvrir...": "open_file",
             "Abrir...": "open_file",
             "開く...": "open_file",
             "열기...": "open_file",
             "Apri...": "open_file",
+            "Открыть...": "open_file",
+            "Otwórz...": "open_file",
+            "Aç...": "open_file",
 
             "Zoom In": "zoom_in",
             "放大": "zoom_in",
@@ -330,33 +400,55 @@ public final class LocalizationManager: ObservableObject {
             "拡大": "zoom_in",
             "확대": "zoom_in",
             "Ingrandisci": "zoom_in",
+            "Увеличить": "zoom_in",
+            "Ampliar": "zoom_in",
+            "Inzoomen": "zoom_in",
+            "Powiększ": "zoom_in",
+            "Yakınlaştır": "zoom_in",
 
             "Zoom Out": "zoom_out",
             "缩小": "zoom_out",
+            "縮小": "zoom_out",
             "Verkleinern": "zoom_out",
             "Zoom arrière": "zoom_out",
             "Alejar": "zoom_out",
-            "縮小": "zoom_out",
             "축소": "zoom_out",
             "Riduci": "zoom_out",
+            "Уменьшить": "zoom_out",
+            "Reduzir": "zoom_out",
+            "Uitzoomen": "zoom_out",
+            "Pomniejsz": "zoom_out",
+            "Uzaklaştır": "zoom_out",
 
             "Actual Size": "actual_size",
             "实际大小": "actual_size",
+            "實際大小": "actual_size",
             "Originalgröße": "actual_size",
             "Taille réelle": "actual_size",
             "Tamaño real": "actual_size",
             "原寸大": "actual_size",
             "실제 크기": "actual_size",
             "Dimensioni reali": "actual_size",
+            "Реальный размер": "actual_size",
+            "Tamanho real": "actual_size",
+            "Werkelijke grootte": "actual_size",
+            "Wielkość rzeczywista": "actual_size",
+            "Gerçek Boyut": "actual_size",
 
             "Toggle Sidebar": "toggle_sidebar",
             "切换侧边栏": "toggle_sidebar",
+            "切換側邊欄": "toggle_sidebar",
             "Seitenleiste umschalten": "toggle_sidebar",
             "Masquer/Afficher la barre latérale": "toggle_sidebar",
             "Mostrar/Ocultar barra lateral": "toggle_sidebar",
             "サイドバーの切り替え": "toggle_sidebar",
             "사이드바 전환": "toggle_sidebar",
             "Mostra/Nascondi barra laterale": "toggle_sidebar",
+            "Переключить боковую панель": "toggle_sidebar",
+            "Alternar barra lateral": "toggle_sidebar",
+            "Zijbalk in-/uitschakelen": "toggle_sidebar",
+            "Przełącz pasek boczny": "toggle_sidebar",
+            "Kenar Çubuğunu Aç/Kapat": "toggle_sidebar",
 
             // Themes
             "Day": "theme_day",
@@ -367,29 +459,44 @@ public final class LocalizationManager: ObservableObject {
             "昼間": "theme_day",
             "주간": "theme_day",
             "Giorno": "theme_day",
+            "Дневная": "theme_day",
+            "Dzień": "theme_day",
+            "Gündüz": "theme_day",
 
             "Night": "theme_night",
             "夜间": "theme_night",
+            "夜間": "theme_night",
             "Nacht": "theme_night",
             "Nuit": "theme_night",
             "Noche": "theme_night",
-            "夜間": "theme_night",
             "야간": "theme_night",
             "Notte": "theme_night",
+            "Ночная": "theme_night",
+            "Noite": "theme_night",
+            "Noc": "theme_night",
+            "Gece": "theme_night",
 
             "Muji": "theme_muji",
             "纸感": "theme_muji",
+            "紙感": "theme_muji",
             "無印": "theme_muji",
             "무지": "theme_muji",
+            "Бумажная": "theme_muji",
 
             "Forest": "theme_forest",
             "护眼": "theme_forest",
+            "護眼": "theme_forest",
             "Wald": "theme_forest",
             "Forêt": "theme_forest",
             "Bosque": "theme_forest",
             "森林": "theme_forest",
             "숲": "theme_forest",
-            "Foresta": "theme_forest"
+            "Foresta": "theme_forest",
+            "Лесная": "theme_forest",
+            "Floresta": "theme_forest",
+            "Bos": "theme_forest",
+            "Las": "theme_forest",
+            "Orman": "theme_forest"
         ]
 
         var updatedCount = 0

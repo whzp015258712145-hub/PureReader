@@ -1,0 +1,35 @@
+/* Top Level System Menus */
+"file" = "Ficheiro";
+"edit" = "Editar";
+"view" = "Visualizar";
+"window" = "Janela";
+"help" = "Ajuda";
+
+/* Menu & UI items */
+"open_file" = "Abrir...";
+"encoding" = "Codificação";
+"zoom_in" = "Ampliar";
+"zoom_out" = "Reduzir";
+"actual_size" = "Tamanho real";
+"toggle_sidebar" = "Alternar barra lateral";
+"theme" = "Tema";
+"language" = "Idioma";
+
+/* Theme names */
+"theme_day" = "Dia";
+"theme_night" = "Noite";
+"theme_muji" = "Muji";
+"theme_forest" = "Floresta";
+
+/* UI strings */
+"toc" = "Índice";
+"no_chapters" = "Sem estrutura de capítulos";
+"no_chapters_subtitle" = "O conteúdo será exibido continuamente";
+"appearance" = "Aparência";
+"font_family" = "Fonte";
+"font_size" = "Tamanho da fonte";
+"line_height" = "Altura da linha";
+"ok" = "OK";
+"open" = "Abrir livro";
+"retry" = "Tentar novamente";
+"unsupported_format" = "Formato não suportado";

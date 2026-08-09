@@ -1,0 +1,35 @@
+/* Top Level System Menus */
+"file" = "檔案";
+"edit" = "編輯";
+"view" = "顯示";
+"window" = "視窗";
+"help" = "說明";
+
+/* Menu & UI items */
+"open_file" = "開啟...";
+"encoding" = "編碼";
+"zoom_in" = "放大";
+"zoom_out" = "縮小";
+"actual_size" = "實際大小";
+"toggle_sidebar" = "切換側邊欄";
+"theme" = "外觀主題";
+"language" = "語言";
+
+/* Theme names */
+"theme_day" = "日光";
+"theme_night" = "夜間";
+"theme_muji" = "紙感";
+"theme_forest" = "護眼";
+
+/* UI strings */
+"toc" = "目錄";
+"no_chapters" = "此書無章節結構";
+"no_chapters_subtitle" = "內容將以連續方式顯示";
+"appearance" = "外觀設定";
+"font_family" = "字體";
+"font_size" = "字號";
+"line_height" = "行高";
+"ok" = "確定";
+"open" = "開啟書籍";
+"retry" = "重試";
+"unsupported_format" = "不支援的格式";

@@ -1,0 +1,35 @@
+/* Top Level System Menus */
+"file" = "Bestand";
+"edit" = "Bewerken";
+"view" = "Weergave";
+"window" = "Venster";
+"help" = "Help";
+
+/* Menu & UI items */
+"open_file" = "Open...";
+"encoding" = "Codering";
+"zoom_in" = "Inzoomen";
+"zoom_out" = "Uitzoomen";
+"actual_size" = "Werkelijke grootte";
+"toggle_sidebar" = "Zijbalk in-/uitschakelen";
+"theme" = "Thema";
+"language" = "Taal";
+
+/* Theme names */
+"theme_day" = "Dag";
+"theme_night" = "Nacht";
+"theme_muji" = "Muji";
+"theme_forest" = "Bos";
+
+/* UI strings */
+"toc" = "Inhoudsopgave";
+"no_chapters" = "Geen hoofdstukstructuur";
+"no_chapters_subtitle" = "Inhoud wordt doorlopend weergegeven";
+"appearance" = "Weergave";
+"font_family" = "Lettertype";
+"font_size" = "Tekstgrootte";
+"line_height" = "Regelhoogte";
+"ok" = "OK";
+"open" = "Boek openen";
+"retry" = "Opnieuw proberen";
+"unsupported_format" = "Niet-ondersteunde indeling";
