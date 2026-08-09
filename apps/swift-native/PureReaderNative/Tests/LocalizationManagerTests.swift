@@ -119,6 +119,27 @@ struct LocalizationManagerTests {
             }
         }
 
+        // Test 5: State Change & Menu Update Persistence
+        await runTest("testStateChangeMenuPersistence") {
+            await manager.setLanguage(.english)
+            try assertEqual(manager.currentLanguage, .english, "Language set to English")
+
+            // Simulate UI button clicks triggering multiple scheduleMenuUpdate calls
+            await manager.scheduleMenuUpdate(reason: "Test Button Click 1")
+            await manager.scheduleMenuUpdate(reason: "Test Button Click 2")
+            await manager.scheduleMenuUpdate(reason: "Test Button Click 3")
+
+            // Wait 50ms for debounced task
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            try assertEqual(manager.string(for: "file"), "File", "file key after button clicks")
+            try assertEqual(manager.string(for: "edit"), "Edit", "edit key after button clicks")
+            try assertEqual(manager.string(for: "view"), "View", "view key after button clicks")
+
+            await manager.setLanguage(.simplifiedChinese)
+            try assertEqual(manager.string(for: "file"), "文件", "file key in Chinese after button clicks")
+        }
+
         print("------------------------------------------------")
         if failedCount == 0 {
             print("🎉 ALL \(passedCount) TEST SUITES PASSED (100% SUCCESS)")

@@ -8,6 +8,7 @@
 import Foundation
 import AppKit
 import Combine
+import os
 
 /// 应用支持的语言枚举
 public enum AppLanguage: String, CaseIterable, Identifiable {
@@ -38,10 +39,51 @@ public final class LocalizationManager: ObservableObject {
 
     @Published public private(set) var currentLanguage: AppLanguage = .english
 
-    private init() {}
+    private let logger = Logger(subsystem: "com.purereader.app", category: "LocalizationManager")
+    private var isUpdatingMenu = false
+    private var updateTask: Task<Void, Never>?
+    private var cancellables = Set<AnyCancellable>()
+
+    private init() {
+        setupMenuRebuildObservers()
+    }
+
+    /// 监听 AppKit 菜单重新渲染与应用激活通知，解决 SwiftUI 点击按钮重构 .commands 导致菜单还原为默认语言的 Bug
+    private func setupMenuRebuildObservers() {
+        NotificationCenter.default.publisher(for: NSMenu.didAddItemNotification)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.scheduleMenuUpdate(reason: "NSMenu.didAddItemNotification")
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.scheduleMenuUpdate(reason: "NSApplication.didBecomeActiveNotification")
+            }
+            .store(in: &cancellables)
+    }
+
+    /// 防抖（Debounce）菜单更新，避免短时间内多次 .commands 重构导致性能损耗
+    public func scheduleMenuUpdate(reason: String = "Manual Call") {
+        guard !isUpdatingMenu else { return }
+
+        updateTask?.cancel()
+        updateTask = Task { @MainActor [weak self] in
+            guard let self = self else { return }
+            // 延迟一帧让 SwiftUI 完成 .commands DOM/AppKit 菜单树挂载
+            try? await Task.sleep(nanoseconds: 30_000_000) // 30ms
+            if !Task.isCancelled {
+                self.logger.debug("🌐 [LocalizationManager] Triggering scheduled menu update. Reason: \(reason, privacy: .public)")
+                self.updateSystemMenuLanguage()
+            }
+        }
+    }
 
     /// 切换应用语言
     public func setLanguage(_ language: AppLanguage) {
+        logger.info("🌐 [LocalizationManager] Switching language from '\(self.currentLanguage.rawValue, privacy: .public)' to '\(language.rawValue, privacy: .public)'")
         currentLanguage = language
 
         // 同步设置进程级 AppleLanguages 语言环境变量
@@ -76,7 +118,13 @@ public final class LocalizationManager: ObservableObject {
 
     /// 动态刷新 AppKit NSApp.mainMenu 系统菜单栏标题
     public func updateSystemMenuLanguage() {
-        guard let mainMenu = NSApplication.shared.mainMenu else { return }
+        guard let mainMenu = NSApplication.shared.mainMenu else {
+            logger.warning("⚠️ [LocalizationManager] NSApplication.shared.mainMenu is nil (headless mode or before launch)")
+            return
+        }
+
+        isUpdatingMenu = true
+        defer { isUpdatingMenu = false }
 
         // 包含所有顶层系统菜单与子选项的双向标题映射表
         let keyMapping: [String: String] = [
@@ -125,17 +173,27 @@ public final class LocalizationManager: ObservableObject {
             "护眼": "theme_forest"
         ]
 
+        var updatedCount = 0
+
         func updateMenu(_ menu: NSMenu) {
             for item in menu.items {
                 if let key = keyMapping[item.title] {
                     let newTitle = string(for: key)
-                    item.title = newTitle
+                    if item.title != newTitle {
+                        logger.debug("🌐 [LocalizationManager] Updating item title: '\(item.title, privacy: .public)' -> '\(newTitle, privacy: .public)' (key: \(key, privacy: .public))")
+                        item.title = newTitle
+                        updatedCount += 1
+                    }
                 }
                 if let submenu = item.submenu {
                     if let key = keyMapping[submenu.title] {
                         let newTitle = string(for: key)
-                        submenu.title = newTitle
-                        item.title = newTitle
+                        if submenu.title != newTitle {
+                            logger.debug("🌐 [LocalizationManager] Updating submenu title: '\(submenu.title, privacy: .public)' -> '\(newTitle, privacy: .public)' (key: \(key, privacy: .public))")
+                            submenu.title = newTitle
+                            item.title = newTitle
+                            updatedCount += 1
+                        }
                     }
                     updateMenu(submenu)
                 }
@@ -143,5 +201,6 @@ public final class LocalizationManager: ObservableObject {
         }
 
         updateMenu(mainMenu)
+        logger.info("✅ [LocalizationManager] System menu bar language update complete. Current language: '\(self.currentLanguage.rawValue, privacy: .public)', total items updated: \(updatedCount)")
     }
 }
