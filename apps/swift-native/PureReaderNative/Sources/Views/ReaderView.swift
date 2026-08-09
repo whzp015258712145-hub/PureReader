@@ -35,7 +35,7 @@ struct ReaderView: View {
                         .foregroundColor(vm.config.theme.textColorValue.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
-                    Button(NSLocalizedString("retry", comment: "")) {
+                    Button(vm.l("retry")) {
                         if let path = vm.currentPath {
                             Task { await vm.loadBook(path: path) }
                         }
@@ -55,7 +55,7 @@ struct ReaderView: View {
                     // 对应 Flutter TxtReaderWidget
                     TextRenderer(pages: content.pages ?? [], config: $vm.config)
                 case .unknown:
-                    Text(NSLocalizedString("unsupported_format", comment: ""))
+                    Text(vm.l("unsupported_format"))
                         .foregroundColor(vm.config.theme.textColorValue.opacity(0.5))
                 }
 

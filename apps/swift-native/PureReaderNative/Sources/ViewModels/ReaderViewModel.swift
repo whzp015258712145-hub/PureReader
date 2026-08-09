@@ -121,4 +121,15 @@ class ReaderViewModel: ObservableObject {
         config.locale = lang
         configStore.save(config)
     }
+
+    /// 动态多语言本地化 Lookup（支持随 config.locale 实时切换字符串）
+    func l(_ key: String) -> String {
+        let lang = config.locale.hasPrefix("zh") ? "zh-Hans" : "en"
+        if let path = Bundle.module.path(forResource: lang, ofType: "lproj"),
+           let bundle = Bundle(path: path) {
+            return NSLocalizedString(key, bundle: bundle, comment: "")
+        }
+        return NSLocalizedString(key, bundle: .module, comment: "")
+    }
 }
+

@@ -40,14 +40,14 @@ struct PureReaderApp: App {
         .commands {
             // 替换默认的 New Item，改为 Open（对应 Flutter PlatformMenu('文件')）
             CommandGroup(replacing: .newItem) {
-                Button(LocalizedStringKey("menu_open")) {
+                Button(vm.l("open_file")) {
                     vm.openFilePicker()
                 }
                 .keyboardShortcut("o", modifiers: .command)
             }
 
             // 编码菜单（对应 Flutter PlatformMenu('编码')）
-            CommandMenu(LocalizedStringKey("menu_encoding")) {
+            CommandMenu(vm.l("encoding")) {
                 Button("Auto (Detect)")            { vm.reloadWithEncoding(nil) }
                 Button("UTF-8 (Universal)")         { vm.reloadWithEncoding("utf-8") }
                 Button("GBK (Chinese)")             { vm.reloadWithEncoding("gbk") }
@@ -58,24 +58,24 @@ struct PureReaderApp: App {
 
             // 视图菜单（对应 Flutter PlatformMenu('视图')）
             CommandGroup(replacing: .toolbar) {
-                Button(LocalizedStringKey("menu_zoom_in")) {
+                Button(vm.l("zoom_in")) {
                     vm.updateFontSize(vm.config.fontSize * 1.1)
                 }
                 .keyboardShortcut("+", modifiers: .command)
 
-                Button(LocalizedStringKey("menu_zoom_out")) {
+                Button(vm.l("zoom_out")) {
                     vm.updateFontSize(vm.config.fontSize * 0.9)
                 }
                 .keyboardShortcut("-", modifiers: .command)
 
-                Button(LocalizedStringKey("menu_actual_size")) {
+                Button(vm.l("actual_size")) {
                     vm.updateFontSize(18.0)
                 }
                 .keyboardShortcut("0", modifiers: .command)
 
                 Divider()
 
-                Button(LocalizedStringKey("menu_toggle_sidebar")) {
+                Button(vm.l("toggle_sidebar")) {
                     withAnimation(.easeInOut(duration: 0.15)) {
                         vm.isSidebarCollapsed.toggle()
                     }
@@ -84,23 +84,24 @@ struct PureReaderApp: App {
             }
 
             // 主题菜单（对应 Flutter PlatformMenu('外观主题')）
-            CommandMenu(LocalizedStringKey("menu_theme")) {
-                Button(LocalizedStringKey("theme_day"))    { vm.setTheme("day") }
+            CommandMenu(vm.l("theme")) {
+                Button(vm.l("theme_day"))    { vm.setTheme("day") }
                     .keyboardShortcut("1", modifiers: [.command, .shift])
-                Button(LocalizedStringKey("theme_night"))  { vm.setTheme("night") }
+                Button(vm.l("theme_night"))  { vm.setTheme("night") }
                     .keyboardShortcut("2", modifiers: [.command, .shift])
-                Button(LocalizedStringKey("theme_muji"))   { vm.setTheme("muji") }
+                Button(vm.l("theme_muji"))   { vm.setTheme("muji") }
                     .keyboardShortcut("3", modifiers: [.command, .shift])
-                Button(LocalizedStringKey("theme_forest")) { vm.setTheme("forest") }
+                Button(vm.l("theme_forest")) { vm.setTheme("forest") }
                     .keyboardShortcut("4", modifiers: [.command, .shift])
             }
 
             // 语言菜单（对应 Flutter PlatformMenu('语言')）
-            CommandMenu(LocalizedStringKey("menu_language")) {
+            CommandMenu(vm.l("language")) {
                 Button("English") { vm.setLocale("en") }
                 Button("中文")    { vm.setLocale("zh") }
             }
         }
+
     }
 }
 

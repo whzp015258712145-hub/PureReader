@@ -15,7 +15,7 @@ struct EmptyStateView: View {
             Image(systemName: "book")
                 .font(.system(size: 80))
                 .foregroundColor(vm.config.theme.textColorValue.opacity(0.15))
-            Button(NSLocalizedString("open", comment: "")) {
+            Button(vm.l("open")) {
                 vm.openFilePicker()
             }
             .buttonStyle(.borderedProminent)

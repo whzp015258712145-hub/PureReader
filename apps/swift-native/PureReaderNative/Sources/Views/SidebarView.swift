@@ -132,8 +132,9 @@ struct SidebarView: View {
     }
 
     private func l(_ key: String) -> String {
-        NSLocalizedString(key, bundle: .module, comment: "")
+        vm.l(key)
     }
+
 }
 
 extension Notification.Name {

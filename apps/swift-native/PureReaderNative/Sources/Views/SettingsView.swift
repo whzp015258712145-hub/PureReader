@@ -13,12 +13,12 @@ struct SettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text(NSLocalizedString("appearance", comment: ""))
+            Text(vm.l("appearance"))
                 .font(.system(size: 22, weight: .bold))
                 .foregroundColor(vm.config.theme.textColorValue)
 
             Group {
-                sectionTitle(NSLocalizedString("font_family", comment: ""))
+                sectionTitle(vm.l("font_family"))
                 Picker("", selection: Binding(
                     get: { vm.config.fontFamily },
                     set: { vm.updateFontFamily($0) }
@@ -45,19 +45,19 @@ struct SettingsView: View {
             }
 
             sliderRow(
-                label: NSLocalizedString("font_size", comment: ""),
+                label: vm.l("font_size"),
                 value: Binding(get: { vm.config.fontSize }, set: { vm.updateFontSize($0) }),
                 range: 12...40
             )
 
             sliderRow(
-                label: NSLocalizedString("line_height", comment: ""),
+                label: vm.l("line_height"),
                 value: Binding(get: { vm.config.lineHeight }, set: { vm.updateLineHeight($0) }),
                 range: 1.0...2.5
             )
 
             VStack(alignment: .leading, spacing: 10) {
-                sectionTitle(NSLocalizedString("theme", comment: ""))
+                sectionTitle(vm.l("theme"))
 
                 HStack(spacing: 10) {
                     ForEach(ReaderTheme.allThemes) { theme in
@@ -89,8 +89,9 @@ struct SettingsView: View {
             Button {
                 dismiss()
             } label: {
-                Text(NSLocalizedString("ok", comment: ""))
+                Text(vm.l("ok"))
                     .font(.system(size: 20, weight: .medium))
+
                     .frame(maxWidth: .infinity)
                     .frame(height: 44)
                     .foregroundColor(vm.config.theme.backgroundColorValue)
