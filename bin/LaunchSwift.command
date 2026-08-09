@@ -62,6 +62,10 @@ if [ -f "$SWIFT_ROOT/Package.swift" ]; then
         "$SWIFT_ROOT/PureReaderNative/Resources/Info.plist" > "$APP_BUNDLE/Contents/Info.plist"
   fi
 
+  # 强制 Launch Services 重新注册 app bundle（Dock/Finder 才能读到最新图标）
+  /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister \
+    -f "$APP_BUNDLE" 2>/dev/null || true
+
   # 杀死可能滞留的旧 PureReader 进程，避免 macOS open 命令仅置顶旧 PID 实例
   pkill -x PureReader 2>/dev/null || true
   sleep 0.2
