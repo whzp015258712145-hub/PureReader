@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AppKit
 import PureReaderCore
 
 @main
@@ -138,6 +139,61 @@ struct LocalizationManagerTests {
 
             await manager.setLanguage(.simplifiedChinese)
             try assertEqual(manager.string(for: "file"), "文件", "file key in Chinese after button clicks")
+        }
+
+        // Test 6: Real AppKit NSMenu Hierarchy Translation Test
+        await runTest("testRealNSMenuHierarchyTranslation") {
+            let mainMenu = NSMenu(title: "MainMenu")
+
+            let fileSubmenu = NSMenu(title: "File")
+            fileSubmenu.addItem(withTitle: "Open...", action: nil, keyEquivalent: "o")
+            let fileItem = NSMenuItem(title: "File", action: nil, keyEquivalent: "")
+            fileItem.submenu = fileSubmenu
+            mainMenu.addItem(fileItem)
+
+            let editSubmenu = NSMenu(title: "Edit")
+            let editItem = NSMenuItem(title: "Edit", action: nil, keyEquivalent: "")
+            editItem.submenu = editSubmenu
+            mainMenu.addItem(editItem)
+
+            let viewSubmenu = NSMenu(title: "View")
+            let viewItem = NSMenuItem(title: "View", action: nil, keyEquivalent: "")
+            viewItem.submenu = viewSubmenu
+            mainMenu.addItem(viewItem)
+
+            let windowSubmenu = NSMenu(title: "Window")
+            let windowItem = NSMenuItem(title: "Window", action: nil, keyEquivalent: "")
+            windowItem.submenu = windowSubmenu
+            mainMenu.addItem(windowItem)
+
+            let helpSubmenu = NSMenu(title: "Help")
+            let helpItem = NSMenuItem(title: "Help", action: nil, keyEquivalent: "")
+            helpItem.submenu = helpSubmenu
+            mainMenu.addItem(helpItem)
+
+            // Test Chinese Translation
+            await manager.setLanguage(.simplifiedChinese)
+            let updatedCountZh = await manager.updateSystemMenuLanguage(targetMenu: mainMenu)
+            try assertTrue(updatedCountZh > 0, "Updated count should be > 0 for Chinese")
+
+            try assertEqual(fileItem.title, "文件", "File menu title in Chinese")
+            try assertEqual(fileSubmenu.title, "文件", "File submenu title in Chinese")
+            try assertEqual(editItem.title, "编辑", "Edit menu title in Chinese")
+            try assertEqual(viewItem.title, "显示", "View menu title in Chinese")
+            try assertEqual(windowItem.title, "窗口", "Window menu title in Chinese")
+            try assertEqual(helpItem.title, "帮助", "Help menu title in Chinese")
+
+            // Test English Reversion
+            await manager.setLanguage(.english)
+            let updatedCountEn = await manager.updateSystemMenuLanguage(targetMenu: mainMenu)
+            try assertTrue(updatedCountEn > 0, "Updated count should be > 0 for English")
+
+            try assertEqual(fileItem.title, "File", "File menu title in English")
+            try assertEqual(fileSubmenu.title, "File", "File submenu title in English")
+            try assertEqual(editItem.title, "Edit", "Edit menu title in English")
+            try assertEqual(viewItem.title, "View", "View menu title in English")
+            try assertEqual(windowItem.title, "Window", "Window menu title in English")
+            try assertEqual(helpItem.title, "Help", "Help menu title in English")
         }
 
         print("------------------------------------------------")

@@ -41,6 +41,7 @@ public final class LocalizationManager: ObservableObject {
 
     private let logger = Logger(subsystem: "com.purereader.app", category: "LocalizationManager")
     private var isUpdatingMenu = false
+    private var pendingUpdateNeeded = false
     private var updateTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
 
@@ -65,17 +66,21 @@ public final class LocalizationManager: ObservableObject {
             .store(in: &cancellables)
     }
 
-    /// 防抖（Debounce）菜单更新，避免短时间内多次 .commands 重构导致性能损耗
+    /// 防抖与队列化菜单更新，确保 SwiftUI 在高频变动 .commands 时绝不遗漏菜单渲染
     public func scheduleMenuUpdate(reason: String = "Manual Call") {
-        guard !isUpdatingMenu else { return }
+        if isUpdatingMenu {
+            pendingUpdateNeeded = true
+            logger.debug("🌐 [LocalizationManager] Menu update in progress. Queued pending update. Reason: \(reason, privacy: .public)")
+            return
+        }
 
         updateTask?.cancel()
         updateTask = Task { @MainActor [weak self] in
             guard let self = self else { return }
-            // 延迟一帧让 SwiftUI 完成 .commands DOM/AppKit 菜单树挂载
-            try? await Task.sleep(nanoseconds: 30_000_000) // 30ms
+            // 延迟 40ms 确保 SwiftUI 完成 AppKit NSMenu DOM 树节点挂载
+            try? await Task.sleep(nanoseconds: 40_000_000)
             if !Task.isCancelled {
-                self.logger.debug("🌐 [LocalizationManager] Triggering scheduled menu update. Reason: \(reason, privacy: .public)")
+                self.logger.info("🌐 [LocalizationManager] Executing scheduled system menu update. Reason: \(reason, privacy: .public)")
                 self.updateSystemMenuLanguage()
             }
         }
@@ -83,7 +88,7 @@ public final class LocalizationManager: ObservableObject {
 
     /// 切换应用语言
     public func setLanguage(_ language: AppLanguage) {
-        logger.info("🌐 [LocalizationManager] Switching language from '\(self.currentLanguage.rawValue, privacy: .public)' to '\(language.rawValue, privacy: .public)'")
+        logger.info("🌐 [LocalizationManager] Changing active language: '\(self.currentLanguage.rawValue, privacy: .public)' -> '\(language.rawValue, privacy: .public)'")
         currentLanguage = language
 
         // 同步设置进程级 AppleLanguages 语言环境变量
@@ -116,17 +121,24 @@ public final class LocalizationManager: ObservableObject {
         return Bundle.module.localizedString(forKey: key, value: key, table: nil as String?)
     }
 
-    /// 动态刷新 AppKit NSApp.mainMenu 系统菜单栏标题
-    public func updateSystemMenuLanguage() {
-        guard let mainMenu = NSApplication.shared.mainMenu else {
+    /// 动态刷新 NSMenu 系统菜单栏标题（可传入特定 NSMenu 进行测试）
+    @discardableResult
+    public func updateSystemMenuLanguage(targetMenu: NSMenu? = nil) -> Int {
+        guard let mainMenu = targetMenu ?? NSApplication.shared.mainMenu else {
             logger.warning("⚠️ [LocalizationManager] NSApplication.shared.mainMenu is nil (headless mode or before launch)")
-            return
+            return 0
         }
 
         isUpdatingMenu = true
-        defer { isUpdatingMenu = false }
+        defer {
+            isUpdatingMenu = false
+            if pendingUpdateNeeded {
+                pendingUpdateNeeded = false
+                scheduleMenuUpdate(reason: "Pending update queue drain")
+            }
+        }
 
-        // 包含所有顶层系统菜单与子选项的双向标题映射表
+        // 双向标题与本地化 Key 字典映射表（覆盖英文与中文各种系统默认词条变体）
         let keyMapping: [String: String] = [
             // Top Level System Menus
             "File": "file",
@@ -177,30 +189,43 @@ public final class LocalizationManager: ObservableObject {
 
         func updateMenu(_ menu: NSMenu) {
             for item in menu.items {
-                if let key = keyMapping[item.title] {
+                // 1. 尝试通过 item.title 匹配 key
+                var matchedKey: String? = keyMapping[item.title]
+
+                // 2. 若 item.title 未匹配到，尝试通过 item.submenu?.title 匹配 key
+                if matchedKey == nil, let subTitle = item.submenu?.title {
+                    matchedKey = keyMapping[subTitle]
+                }
+
+                if let key = matchedKey {
                     let newTitle = string(for: key)
+
                     if item.title != newTitle {
-                        logger.debug("🌐 [LocalizationManager] Updating item title: '\(item.title, privacy: .public)' -> '\(newTitle, privacy: .public)' (key: \(key, privacy: .public))")
+                        logger.info("🌐 [LocalizationManager] Item title updated: '\(item.title, privacy: .public)' -> '\(newTitle, privacy: .public)' (key: \(key, privacy: .public))")
                         item.title = newTitle
                         updatedCount += 1
                     }
-                }
-                if let submenu = item.submenu {
-                    if let key = keyMapping[submenu.title] {
-                        let newTitle = string(for: key)
+
+                    if let submenu = item.submenu {
                         if submenu.title != newTitle {
-                            logger.debug("🌐 [LocalizationManager] Updating submenu title: '\(submenu.title, privacy: .public)' -> '\(newTitle, privacy: .public)' (key: \(key, privacy: .public))")
+                            logger.info("🌐 [LocalizationManager] Submenu title updated: '\(submenu.title, privacy: .public)' -> '\(newTitle, privacy: .public)' (key: \(key, privacy: .public))")
                             submenu.title = newTitle
-                            item.title = newTitle
                             updatedCount += 1
                         }
                     }
+                } else if !item.title.isEmpty && item.title != "PureReader" && !item.isSeparatorItem {
+                    logger.notice("ℹ️ [LocalizationManager] Unmapped menu item encountered: '\(item.title, privacy: .public)'")
+                }
+
+                // 递归更新深层子菜单
+                if let submenu = item.submenu {
                     updateMenu(submenu)
                 }
             }
         }
 
         updateMenu(mainMenu)
-        logger.info("✅ [LocalizationManager] System menu bar language update complete. Current language: '\(self.currentLanguage.rawValue, privacy: .public)', total items updated: \(updatedCount)")
+        logger.info("✅ [LocalizationManager] Menu update finished. Current language: '\(self.currentLanguage.rawValue, privacy: .public)', updated \(updatedCount) titles")
+        return updatedCount
     }
 }
