@@ -45,6 +45,9 @@ public final class LocalizationManager: ObservableObject {
     private var updateTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
 
+    /// 本地化字符串内存缓存 [AppLanguage: [Key: LocalizedString]]
+    private var stringCaches: [AppLanguage: [String: String]] = [:]
+
     private init() {
         setupMenuRebuildObservers()
     }
@@ -104,21 +107,42 @@ public final class LocalizationManager: ObservableObject {
         setLanguage(lang)
     }
 
-    /// 根据 Key 获取对应语言的本地化字符串
-    public func string(for key: String) -> String {
-        let langCode = currentLanguage.rawValue
-        let candidates = [langCode, langCode.lowercased(), langCode.replacingOccurrences(of: "-", with: "_"), String(langCode.prefix(2))]
+    /// 加载指定语言的 Localizable.strings 字典
+    private func loadStrings(for language: AppLanguage) -> [String: String] {
+        if let cached = stringCaches[language] {
+            return cached
+        }
+
+        let langCode = language.rawValue
+        let candidates = [
+            langCode,
+            langCode.lowercased(),
+            langCode.replacingOccurrences(of: "-", with: "_"),
+            String(langCode.prefix(2))
+        ]
 
         for code in candidates {
-            if let path = Bundle.module.path(forResource: code, ofType: "lproj"),
-               let bundle = Bundle(path: path) {
-                let localized = bundle.localizedString(forKey: key, value: key, table: nil as String?)
-                if localized != key {
-                    return localized
-                }
+            if let path = Bundle.module.path(forResource: "Localizable", ofType: "strings", inDirectory: "\(code).lproj") ??
+                          Bundle.module.path(forResource: "Localizable", ofType: "strings", inDirectory: "\(code.lowercased()).lproj"),
+               let dict = NSDictionary(contentsOfFile: path) as? [String: String] {
+                logger.info("🌐 [LocalizationManager] Successfully loaded \(dict.count) localized strings for '\(language.rawValue, privacy: .public)' from '\(path, privacy: .public)'")
+                stringCaches[language] = dict
+                return dict
             }
         }
-        return Bundle.module.localizedString(forKey: key, value: key, table: nil as String?)
+
+        logger.error("❌ [LocalizationManager] Failed to locate Localizable.strings for '\(language.rawValue, privacy: .public)' in Bundle.module")
+        return [:]
+    }
+
+    /// 根据 Key 获取对应语言的本地化字符串（直接从对应语言包字典查询）
+    public func string(for key: String) -> String {
+        let dict = loadStrings(for: currentLanguage)
+        if let val = dict[key] {
+            return val
+        }
+        logger.warning("⚠️ [LocalizationManager] Key '\(key, privacy: .public)' not found in language '\(self.currentLanguage.rawValue, privacy: .public)'")
+        return key
     }
 
     /// 动态刷新 NSMenu 系统菜单栏标题（可传入特定 NSMenu 进行测试）
